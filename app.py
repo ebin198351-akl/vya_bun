@@ -41,7 +41,7 @@ SAFE_EXTS = {".html", ".css", ".js", ".jpg", ".jpeg", ".png", ".gif",
 
 # Site canonical base — used inside schema URLs. Falls back to a sensible
 # default for production; can be overridden via env at deploy time.
-SITE_BASE = os.getenv("PUBLIC_BASE_URL", "https://vyaskitchen.co.nz").rstrip("/")
+SITE_BASE = os.getenv("PUBLIC_BASE_URL", "https://vya.co.nz").rstrip("/")
 
 CATEGORY_LABELS = {
     "pork":    ("猪肉",   "Pork"),
