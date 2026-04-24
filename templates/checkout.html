@@ -20,8 +20,15 @@
     };
   </script>
   <link rel="stylesheet" href="/styles.css">
-  {# Legacy google.maps.places.Autocomplete is blocked for GCP projects
-     created after March 2025. Server-side Distance Matrix still works. #}
+  {# Google Maps JS — new loader pattern for Places API (New) #}
+  {% if maps_enabled and google_maps_key %}
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+      key: "{{ google_maps_key }}",
+      v: "weekly"
+    });
+  </script>
+  {% endif %}
   <style>
     /* Page-local checkout styles */
     .co-page { background: var(--paper); min-height: 100vh; padding: 80px 0 60px; }
@@ -214,6 +221,38 @@
       margin: 6px 0 0; display: flex; gap: 4px; align-items: center;
     }
     .addr-hint::before { content: "💡"; }
+
+    /* Autocomplete dropdown (custom, matches brand) */
+    .addr-wrap { position: relative; }
+    .addr-suggestions {
+      position: absolute; left: 0; right: 0; top: 100%;
+      z-index: 50;
+      list-style: none; margin: 4px 0 0; padding: 4px 0;
+      background: #fff;
+      border: 1px solid rgba(58, 31, 15, 0.12);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(58, 31, 15, 0.16),
+                  0 2px 6px rgba(58, 31, 15, 0.08);
+      max-height: 300px; overflow-y: auto;
+    }
+    .addr-suggestions li {
+      padding: 9px 14px; font-size: 13px; color: var(--soy);
+      cursor: pointer; border-top: 1px solid rgba(58, 31, 15, 0.06);
+      line-height: 1.4;
+    }
+    .addr-suggestions li:first-child { border-top: none; }
+    .addr-suggestions li:hover,
+    .addr-suggestions li.active {
+      background: rgba(192, 56, 42, 0.08);
+      color: var(--stamp);
+    }
+    .addr-suggestions li .main { font-weight: 600; }
+    .addr-suggestions li .secondary {
+      font-size: 12px; color: #6b7280; margin-top: 2px;
+    }
+    .addr-loading {
+      font-size: 12px; color: #9ca3af; padding: 8px 14px; font-style: italic;
+    }
   </style>
 </head>
 <body class="lang-zh">
@@ -247,20 +286,23 @@
               <!-- Chrome ignores autocomplete=off, but accepts unknown values
                    like new-password / chrome-off / a random unknown token,
                    which suppresses its native address autofill bar. -->
-              <input type="search" id="address-input"
-                     autocomplete="new-password"
-                     autocorrect="off"
-                     autocapitalize="off"
-                     spellcheck="false"
-                     name="addr-search-{{ delivery_dates[0].iso }}"
-                     data-1p-ignore
-                     data-lpignore="true"
-                     data-form-type="other"
-                     data-bwignore
-                     placeholder="e.g. 12 Smith Street, Takapuna, Auckland 0622">
+              <div class="addr-wrap">
+                <input type="search" id="address-input"
+                       autocomplete="new-password"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       spellcheck="false"
+                       name="addr-search-{{ delivery_dates[0].iso }}"
+                       data-1p-ignore
+                       data-lpignore="true"
+                       data-form-type="other"
+                       data-bwignore
+                       placeholder="e.g. 12 Smith Street, Takapuna, Auckland 0622">
+                <ul class="addr-suggestions" id="addr-suggestions" hidden></ul>
+              </div>
               <p class="addr-hint">
-                <span class="lang zh">输入完整地址(含门牌和邮编最准),我们会自动算距离</span>
-                <span class="lang en">Enter full address incl. number &amp; postcode for the most accurate distance</span>
+                <span class="lang zh">开始输入即可从下拉选地址(更准),或直接打完整地址</span>
+                <span class="lang en">Start typing and pick from the dropdown (best accuracy), or type the full address</span>
               </p>
             </div>
             <div class="region-picker" id="region-picker">
@@ -553,7 +595,12 @@
 
       $addr.addEventListener("input", () => {
         clearTimeout(quoteTimer);
+        clearTimeout(autoTimer);
+        activeIdx = -1;
         const v = $addr.value.trim();
+        if (v.length < 3) {
+          hideSuggestions();
+        }
         if (v.length < 6) {
           $quote.className = "quote-box";
           $quote.innerHTML = t(
@@ -562,19 +609,141 @@
           );
           currentQuote = null; updateSubmit(); return;
         }
-        // Debounce server-side Distance Matrix lookup
-        quoteTimer = setTimeout(() => fetchQuote({address: v}), 600);
+        // Debounced: fetch place suggestions (300ms) + distance quote (800ms)
+        // Faster suggestion feedback, slower quote to avoid wasted API calls
+        // when the user hasn't finished typing.
+        if (autoSuggestion) autoTimer = setTimeout(() => fetchSuggestions(v), 300);
+        quoteTimer = setTimeout(() => fetchQuote({address: v}), 800);
       });
 
       $regionInputs.forEach(r => r.addEventListener("change", () => {
         if (r.checked) fetchQuote({region: r.value});
       }));
 
-      // Places Autocomplete (legacy) is blocked for new GCP projects.
-      // Distance Matrix runs server-side on whatever text the user types,
-      // so the full experience still works — just without a dropdown.
-      $addr.addEventListener("keydown", e => {
-        if (e.key === "Enter") e.preventDefault();
+      // ----- New Places API (Autocomplete Data API) with custom dropdown -----
+      // Uses google.maps.places.AutocompleteSuggestion + custom UI so we
+      // keep our brand styling (the <gmp-place-autocomplete> web component
+      // has Google's look we can't easily restyle).
+      const $sugg = document.getElementById("addr-suggestions");
+      let autoSuggestion = null, sessionToken = null, currentSuggestions = [];
+      let autoTimer = null, activeIdx = -1;
+
+      async function initPlaces() {
+        if (!MAPS_ENABLED || !(window.google && google.maps)) return;
+        try {
+          const places = await google.maps.importLibrary("places");
+          autoSuggestion = places.AutocompleteSuggestion;
+          sessionToken   = new places.AutocompleteSessionToken();
+          console.log("[vya] New Places API ready");
+        } catch (e) {
+          console.error("[vya] places init failed", e);
+        }
+      }
+      initPlaces();
+
+      function hideSuggestions() { $sugg.hidden = true; activeIdx = -1; }
+
+      async function fetchSuggestions(input) {
+        if (!autoSuggestion) return;
+        if (input.length < 3) { hideSuggestions(); return; }
+        $sugg.hidden = false;
+        $sugg.innerHTML = '<li class="addr-loading">' + t("查询中…", "Searching…") + '</li>';
+        try {
+          const req = {
+            input,
+            sessionToken,
+            includedRegionCodes: ["nz"],
+            locationBias: {
+              center: { lat: -36.7539, lng: 174.7449 },  // kitchen
+              radius: 30000,
+            },
+          };
+          const { suggestions } = await autoSuggestion.fetchAutocompleteSuggestions(req);
+          currentSuggestions = suggestions || [];
+          renderSuggestions();
+        } catch (e) {
+          console.error("[vya] autocomplete fetch failed", e);
+          hideSuggestions();
+        }
+      }
+
+      function renderSuggestions() {
+        if (!currentSuggestions.length) {
+          $sugg.innerHTML = '<li class="addr-loading">' + t("未找到匹配", "No match") + '</li>';
+          return;
+        }
+        $sugg.innerHTML = currentSuggestions.slice(0, 6).map((s, i) => {
+          const p = s.placePrediction;
+          const main = (p.mainText && p.mainText.toString()) || p.text.toString();
+          const secondary = (p.secondaryText && p.secondaryText.toString()) || "";
+          return `<li data-idx="${i}" class="${i === activeIdx ? 'active' : ''}">
+                    <div class="main">${escapeHtml(main)}</div>
+                    ${secondary ? `<div class="secondary">${escapeHtml(secondary)}</div>` : ''}
+                  </li>`;
+        }).join("");
+      }
+
+      function escapeHtml(s) {
+        return (s || "").replace(/[&<>"']/g, c => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+        }[c]));
+      }
+
+      async function pickSuggestion(i) {
+        const sugg = currentSuggestions[i];
+        if (!sugg) return;
+        try {
+          const place = sugg.placePrediction.toPlace();
+          await place.fetchFields({ fields: ["formattedAddress"] });
+          const addr = place.formattedAddress || sugg.placePrediction.text.toString();
+          $addr.value = addr;
+          hideSuggestions();
+          clearTimeout(quoteTimer);
+          fetchQuote({ address: addr });
+          // Start a new session token after each selection (billing best-practice)
+          if (autoSuggestion) {
+            const places = await google.maps.importLibrary("places");
+            sessionToken = new places.AutocompleteSessionToken();
+          }
+        } catch (e) {
+          console.error("[vya] place fetch failed", e);
+        }
+      }
+
+      $sugg.addEventListener("mousedown", (e) => {
+        // mousedown (not click) so it fires before input blur hides dropdown
+        const li = e.target.closest("li[data-idx]");
+        if (!li) return;
+        e.preventDefault();
+        pickSuggestion(parseInt(li.dataset.idx, 10));
+      });
+
+      // Keyboard: ↑/↓ navigate, Enter select, Esc close
+      $addr.addEventListener("keydown", (e) => {
+        if ($sugg.hidden || !currentSuggestions.length) {
+          if (e.key === "Enter") e.preventDefault();
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          activeIdx = Math.min(activeIdx + 1, currentSuggestions.length - 1);
+          renderSuggestions();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          activeIdx = Math.max(activeIdx - 1, 0);
+          renderSuggestions();
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (activeIdx >= 0) pickSuggestion(activeIdx);
+          else if (currentSuggestions.length) pickSuggestion(0);
+        } else if (e.key === "Escape") {
+          hideSuggestions();
+        }
+      });
+
+      // Close dropdown on outside click
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".addr-wrap")) hideSuggestions();
       });
 
       // re-render summary if cart changed in another tab
