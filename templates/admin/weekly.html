@@ -1,0 +1,39 @@
+{% extends "admin/_layout.html" %}
+{% block title %}本周/下周菜单{% endblock %}
+{% block content %}
+<h1 class="page-title">本周 &amp; 下周菜单</h1>
+<p class="hint">每周 4 个口味,每个口味每日上限 40 个,合计 160 个/天。
+仅在售 SKU 可选。</p>
+
+<div class="weekly-pair">
+  {% for which, label, ws, current in [
+       ('this', '本周', this_ws, weekly_now),
+       ('next', '下周', next_ws, weekly_next),
+     ] %}
+    <form method="post" class="card weekly-card">
+      <input type="hidden" name="which" value="{{ which }}">
+      <h2>{{ label }} <span class="muted">{{ date_label(ws) }}</span></h2>
+
+      {% for pos in [1, 2, 3, 4] %}
+        {% set picked = current.get(pos) %}
+        <label class="slot">
+          <span class="slot-no">#{{ pos }}</span>
+          <select name="slot_{{ pos }}">
+            <option value="0">— 留空 —</option>
+            {% for it in items %}
+              <option value="{{ it.id }}"
+                      {% if picked and picked.id == it.id %}selected{% endif %}>
+                {{ it.name_zh }} ({{ it.name_en }}) · {{ it.sku }}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
+      {% endfor %}
+
+      <div class="weekly-actions">
+        <button type="submit" class="btn-primary">保存{{ label }}菜单</button>
+      </div>
+    </form>
+  {% endfor %}
+</div>
+{% endblock %}

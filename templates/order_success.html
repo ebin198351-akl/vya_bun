@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>预约已提交 · Reservation Submitted · 薇雅厨房</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;600&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WFR49LE0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1WFR49LE0G', { send_page_view: true });
+    window.vyaTrack = function (event, params) {
+      try { gtag('event', event, params || {}); } catch (e) {}
+    };
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .ok-page { background: var(--paper); min-height: 100vh; padding: 80px 0 60px; }
+    .ok-wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+    .ok-card {
+      background: #fff; border-radius: 18px;
+      padding: 36px 32px; text-align: center;
+      box-shadow: 0 16px 40px rgba(58, 31, 15, 0.12);
+    }
+    .ok-stamp {
+      width: 76px; height: 76px; margin: 0 auto 18px;
+      background: var(--soy-mid); color: #fff7ed;
+      border: 3px solid #fff; box-shadow: 0 0 0 2px var(--soy-mid);
+      border-radius: 12px; transform: rotate(-5deg);
+      display: flex; align-items: center; justify-content: center;
+      font-family: "Ma Shan Zheng", serif; font-size: 36px;
+    }
+    .ok-stamp.confirmed { background: var(--bamboo); box-shadow: 0 0 0 2px var(--bamboo); }
+    .ok-stamp.cancelled { background: var(--stamp); box-shadow: 0 0 0 2px var(--stamp); }
+    .ok-card h1 { font-family: "Noto Serif SC", serif; color: var(--soy); margin: 0 0 8px; font-size: 26px; }
+    .ok-card .sub { color: var(--soy-mid); margin: 0 0 24px; font-size: 14px; line-height: 1.6; }
+    .next-steps {
+      text-align: left; background: rgba(192, 56, 42, 0.05);
+      border-left: 4px solid var(--stamp);
+      padding: 14px 18px; border-radius: 8px;
+      font-size: 13px; color: var(--soy);
+      margin: 18px 0 22px;
+    }
+    .next-steps strong { color: var(--stamp); }
+    .next-steps ol { margin: 6px 0 0 18px; padding: 0; }
+    .next-steps li { margin: 4px 0; }
+    .ok-detail {
+      text-align: left; background: var(--paper); padding: 18px 20px;
+      border-radius: 12px; margin: 18px 0;
+    }
+    .ok-detail dl { display: grid; grid-template-columns: 100px 1fr; gap: 6px 12px; margin: 0; }
+    .ok-detail dt { color: #6b7280; font-size: 13px; }
+    .ok-detail dd { margin: 0; color: var(--ink); font-size: 14px; }
+    .ok-items {
+      text-align: left; padding: 14px 20px; background: var(--paper);
+      border-radius: 12px; margin-bottom: 18px;
+    }
+    .ok-items .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .ok-items .row .right { color: var(--stamp); font-weight: 600; }
+    .ok-items .total { border-top: 1.5px solid rgba(58, 31, 15, 0.16); margin-top: 8px; padding-top: 10px; font-size: 16px; }
+    .ok-actions { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+    .ok-btn {
+      display: inline-flex; align-items: center; padding: 10px 22px;
+      border-radius: 999px; text-decoration: none;
+    }
+    .ok-btn.primary { background: var(--stamp); color: #fff7ed; }
+    .ok-btn.ghost { background: transparent; border: 1.5px solid rgba(58,31,15,0.18); color: var(--soy); }
+
+    .est-note { font-size: 11px; color: #9ca3af; margin-top: 8px; }
+  </style>
+</head>
+<body class="lang-zh">
+  <script>
+    (function(){
+      const l = localStorage.getItem("vya_lang") === "en" ? "en" : "zh";
+      document.body.classList.remove("lang-zh","lang-en");
+      document.body.classList.add("lang-" + l);
+      document.documentElement.setAttribute("lang", l === "zh" ? "zh-CN" : "en");
+    })();
+  </script>
+  <div class="ok-page">
+    <div class="ok-wrap">
+      <div class="ok-card">
+        {% if order %}
+          {% set st = order.payment_status %}
+          {% if st == 'confirmed' %}
+            <div class="ok-stamp confirmed">✓</div>
+            <h1>
+              <span class="lang zh">订单已确认</span>
+              <span class="lang en">Order Confirmed</span>
+            </h1>
+            <p class="sub">
+              <span class="lang zh">薇雅厨房已确认你的订单,会按时为你制作并送达。</span>
+              <span class="lang en">Vya's Kitchen confirmed your order — we'll prep and deliver on time.</span>
+            </p>
+          {% elif st == 'cancelled' %}
+            <div class="ok-stamp cancelled">!</div>
+            <h1>
+              <span class="lang zh">订单未能接受</span>
+              <span class="lang en">Order Not Accepted</span>
+            </h1>
+            <p class="sub">
+              <span class="lang zh">很抱歉,薇雅厨房暂时无法接受这单。详情请查看你收到的邮件,或微信 ya312322063 联系我们重新预约。</span>
+              <span class="lang en">Sorry, we couldn't accept this reservation. See your email for details, or WeChat ya312322063 to try again.</span>
+            </p>
+          {% else %}
+            <div class="ok-stamp">…</div>
+            <h1>
+              <span class="lang zh">预约已提交</span>
+              <span class="lang en">Reservation Submitted</span>
+            </h1>
+            <p class="sub">
+              <span class="lang zh">感谢预约!我们已收到你的订单,正在和厨房核对库存与送达安排。</span>
+              <span class="lang en">Thanks! We've received your reservation and are checking stock + delivery details with the kitchen.</span>
+            </p>
+            <div class="next-steps">
+              <strong><span class="lang zh">接下来:</span><span class="lang en">What happens next:</span></strong>
+              <ol>
+                <li>
+                  <span class="lang zh">薇雅厨房会**人工审核**你的订单(库存 / 送达时间 / 地址)</span>
+                  <span class="lang en">Vya's Kitchen will review your order (stock / time / address) manually.</span>
+                </li>
+                <li>
+                  <span class="lang zh">确认或调整后,你会收到**邮件 + SMS**</span>
+                  <span class="lang en">Once confirmed (or adjusted) you'll get an email + SMS.</span>
+                </li>
+                <li>
+                  <span class="lang zh">送达当天会再发短信提醒</span>
+                  <span class="lang en">A reminder SMS goes out on delivery day.</span>
+                </li>
+              </ol>
+            </div>
+          {% endif %}
+
+          <div class="ok-detail">
+            <dl>
+              <dt><span class="lang zh">订单号</span><span class="lang en">Order #</span></dt>
+              <dd>#{{ order.id }}</dd>
+              <dt><span class="lang zh">姓名</span><span class="lang en">Name</span></dt>
+              <dd>{{ order.customer_name }}</dd>
+              <dt><span class="lang zh">电话</span><span class="lang en">Phone</span></dt>
+              <dd>{{ order.phone }}</dd>
+              <dt><span class="lang zh">地址</span><span class="lang en">Address</span></dt>
+              <dd>{{ order.address }}</dd>
+              <dt><span class="lang zh">预约送达</span><span class="lang en">Requested Delivery</span></dt>
+              <dd>{{ order.delivery_date }}</dd>
+              {% if order.distance_km %}
+              <dt><span class="lang zh">距离</span><span class="lang en">Distance</span></dt>
+              <dd>{{ '%.1f km' | format(order.distance_km) }}</dd>
+              {% endif %}
+            </dl>
+          </div>
+
+          <div class="ok-items">
+            {% for it in items %}
+              <div class="row">
+                <span>{{ it.name_snapshot }} × {{ it.quantity }}</span>
+                <span class="right">NZ$ {{ '%.2f' | format(it.unit_price_cents * it.quantity / 100) }}</span>
+              </div>
+            {% endfor %}
+            <div class="row total">
+              <span>
+                <span class="lang zh">{% if st == 'pending' %}预估合计{% else %}合计{% endif %}</span>
+                <span class="lang en">{% if st == 'pending' %}Estimated Total{% else %}Total{% endif %}</span>
+              </span>
+              <span class="right">NZ$ {{ '%.2f' | format(order.total_cents / 100) }}</span>
+            </div>
+            {% if st == 'pending' %}
+            <p class="est-note">
+              <span class="lang zh">⚠ 最终金额以厨房确认为准。如有调整会在确认邮件中说明。</span>
+              <span class="lang en">⚠ Final amount confirmed by kitchen. Any change will be noted in the confirmation email.</span>
+            </p>
+            {% endif %}
+          </div>
+
+          <div class="ok-actions">
+            <button type="button" class="ok-btn primary" id="reorder-btn"
+                    data-reorder="{{ order.id }}" data-token="{{ order_token }}">
+              <span class="lang zh">↻ 再下一单</span>
+              <span class="lang en">↻ Reorder same items</span>
+            </button>
+            <a href="/" class="ok-btn ghost">
+              <span class="lang zh">返回首页</span><span class="lang en">Home</span>
+            </a>
+            <a href="/track" class="ok-btn ghost">
+              <span class="lang zh">查我的订单</span><span class="lang en">My orders</span>
+            </a>
+          </div>
+        {% else %}
+          <div class="ok-stamp">?</div>
+          <h1>
+            <span class="lang zh">订单查不到</span>
+            <span class="lang en">Order not found</span>
+          </h1>
+          <p class="sub">
+            <span class="lang zh">链接可能已失效。请微信 ya312322063 找我们查询。</span>
+            <span class="lang en">This link may have expired. Please WeChat ya312322063 to look it up.</span>
+          </p>
+          <div class="ok-actions">
+            <a href="/" class="ok-btn primary">
+              <span class="lang zh">返回首页</span><span class="lang en">Home</span>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if order %}
+  <script>
+    // Reorder handler — same flow as on /track list
+    const CART_KEY_R = "vya_cart_v1";
+    document.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-reorder]");
+      if (!b) return;
+      const oid = b.dataset.reorder;
+      const tok = b.dataset.token;
+      const isZh = document.body.classList.contains("lang-zh");
+      const t = (zh, en) => isZh ? zh : en;
+      b.disabled = true;
+      const orig = b.innerHTML;
+      b.innerHTML = t("加载中…", "Loading…");
+      try {
+        const r = await fetch(`/api/order/${oid}/reorder?t=${tok}`);
+        const d = await r.json();
+        if (!d.success || !d.items || d.items.length === 0) {
+          alert(t("此订单的商品当前都不在售,无法再下。",
+                  "Items in this order are no longer available."));
+          b.disabled = false; b.innerHTML = orig; return;
+        }
+        const cart = {};
+        d.items.forEach(it => { cart[it.id] = it; });
+        localStorage.setItem(CART_KEY_R, JSON.stringify(cart));
+        if (d.skipped && d.skipped.length) {
+          alert(t(
+            `已加入购物车。以下商品当前不在售,已跳过:\n  ${d.skipped.join(", ")}`,
+            `Added. Skipped (no longer available):\n  ${d.skipped.join(", ")}`
+          ));
+        }
+        location.href = "/checkout";
+      } catch (err) {
+        alert(t("网络错误,请重试", "Network error"));
+        b.disabled = false; b.innerHTML = orig;
+      }
+    });
+  </script>
+  <script>
+    // GA4: count "reservation submitted" as a generate_lead event,
+    // deduped by order ID so refreshes don't double-count.
+    (function () {
+      const ORDER_ID = {{ order.id }};
+      const KEY = "vya_purchased_order_ids";
+      let logged = [];
+      try { logged = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) {}
+      if (logged.includes(ORDER_ID)) return;
+      logged.push(ORDER_ID);
+      try { localStorage.setItem(KEY, JSON.stringify(logged.slice(-50))); } catch (e) {}
+      const items = [
+        {% for it in items %}
+        {
+          item_id: "id_{{ it.menu_item_id }}",
+          item_name: {{ it.name_snapshot | tojson }},
+          price: {{ '%.2f' | format(it.unit_price_cents / 100) }},
+          quantity: {{ it.quantity }}
+        }{{ "," if not loop.last }}
+        {% endfor %}
+      ];
+      const value = {{ '%.2f' | format(order.total_cents / 100) }};
+      // generate_lead = canonical GA4 event for "qualified intent" (no money yet)
+      window.vyaTrack && window.vyaTrack("generate_lead", {
+        currency: "NZD", value: value, items: items,
+      });
+      // Also fire purchase so existing dashboards / conversion goals work
+      window.vyaTrack && window.vyaTrack("purchase", {
+        transaction_id: String(ORDER_ID),
+        value: value, currency: "NZD", items: items,
+      });
+    })();
+  </script>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>查询订单 · Track Orders · 薇雅厨房</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;600&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .tk-page { background: var(--paper); min-height: 100vh; padding: 60px 0; }
+    .tk-wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+    .tk-card {
+      background: #fff; border-radius: 16px; padding: 28px 26px;
+      box-shadow: 0 16px 40px rgba(58, 31, 15, 0.12);
+      margin-bottom: 18px;
+    }
+    .tk-stamp {
+      width: 56px; height: 56px; margin: 0 auto 12px;
+      background: var(--stamp); color: #fff7ed;
+      border: 3px solid #fff; box-shadow: 0 0 0 2px var(--stamp);
+      border-radius: 10px; transform: rotate(-4deg);
+      display: flex; align-items: center; justify-content: center;
+      font-family: "Ma Shan Zheng", serif; font-size: 28px;
+    }
+    .tk-card h1 { text-align: center; font-family: "Noto Serif SC", serif;
+      color: var(--soy); margin: 0 0 6px; font-size: 22px; }
+    .tk-card .sub { text-align: center; color: var(--soy-mid);
+      font-size: 13px; margin: 0 0 22px; }
+
+    .tk-form-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: 1fr 130px;
+    }
+    @media (max-width: 520px) { .tk-form-grid { grid-template-columns: 1fr; } }
+
+    .tk-field { display: flex; flex-direction: column; gap: 5px; }
+    .tk-field label { font-size: 13px; color: var(--soy); font-weight: 500; }
+    .tk-field input {
+      padding: 11px 14px; border: 1.5px solid rgba(58, 31, 15, 0.18);
+      border-radius: 8px; font-family: inherit; font-size: 15px;
+      background: #fff; color: var(--ink);
+    }
+    .tk-field input:focus {
+      outline: none; border-color: var(--stamp);
+      box-shadow: 0 0 0 3px rgba(192, 56, 42, 0.12);
+    }
+    .tk-btn {
+      margin-top: 14px;
+      width: 100%; padding: 13px; border-radius: 8px; border: none;
+      background: var(--stamp); color: #fff7ed; font-family: inherit;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .tk-btn:hover { transform: translateY(-1px); }
+    .tk-error {
+      background: #fee2e2; color: #991b1b; padding: 10px 14px;
+      border-radius: 8px; font-size: 13px; margin-bottom: 14px;
+    }
+    .tk-help { text-align: center; font-size: 12px; color: #9ca3af;
+      margin-top: 14px; }
+    .tk-help a { color: var(--stamp); }
+    .tk-back { display: inline-block; color: var(--soy-mid); margin-bottom: 14px; font-size: 14px; }
+
+    /* Results list */
+    .tk-results h2 {
+      font-family: "Noto Serif SC", serif; color: var(--soy);
+      font-size: 18px; margin: 0 0 4px;
+    }
+    .tk-results .count { color: var(--soy-mid); font-size: 13px; margin: 0 0 16px; }
+    .order-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px; align-items: center;
+      padding: 14px 16px; border-radius: 10px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      margin-bottom: 10px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .order-row:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(58, 31, 15, 0.08);
+    }
+    .order-row .id-pill {
+      font-family: "Noto Serif SC", serif;
+      background: var(--stamp); color: #fff7ed;
+      padding: 6px 10px; border-radius: 6px; font-size: 13px;
+      font-weight: 600; white-space: nowrap;
+    }
+    .order-row .meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .order-row .top-line {
+      font-size: 14px; color: var(--soy); font-weight: 500;
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+    .order-row .bottom-line {
+      font-size: 12px; color: #6b7280;
+    }
+    .row-actions { display: flex; flex-direction: column; gap: 6px; }
+    .order-row .view-btn {
+      padding: 7px 12px; border-radius: 999px;
+      background: var(--soy); color: #fff7ed; text-decoration: none;
+      font-size: 12px; white-space: nowrap; text-align: center;
+      border: none; cursor: pointer;
+    }
+    .order-row .view-btn:hover { background: var(--stamp); }
+    .order-row .reorder-btn {
+      padding: 7px 12px; border-radius: 999px;
+      background: var(--bamboo); color: #fff7ed;
+      font-family: inherit; font-size: 12px; cursor: pointer;
+      border: none; white-space: nowrap;
+    }
+    .order-row .reorder-btn:hover { background: var(--stamp); }
+    .order-row .reorder-btn:disabled { background: #d1d5db; cursor: wait; }
+    @media (max-width: 520px) {
+      .row-actions { flex-direction: row; }
+    }
+
+    .pill {
+      display: inline-block; padding: 2px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    }
+    .pill-pending   { background: #fef3c7; color: #92400e; }
+    .pill-confirmed { background: #d1fae5; color: #065f46; }
+    .pill-paid      { background: #d1fae5; color: #065f46; }
+    .pill-delivered { background: #cffafe; color: #155e75; }
+    .pill-cancelled { background: #fee2e2; color: #991b1b; }
+
+    .tk-noresult {
+      text-align: center; padding: 32px 16px; color: #9ca3af;
+    }
+  </style>
+</head>
+<body class="lang-zh">
+  <script>
+    (function(){
+      const l = localStorage.getItem("vya_lang") === "en" ? "en" : "zh";
+      document.body.classList.remove("lang-zh","lang-en");
+      document.body.classList.add("lang-" + l);
+      document.documentElement.setAttribute("lang", l === "zh" ? "zh-CN" : "en");
+    })();
+    function statusLabel(s){
+      const map = {
+        pending:   ["待审核",   "Awaiting review"],
+        confirmed: ["已确认",   "Confirmed"],
+        paid:      ["已确认",   "Confirmed"],
+        delivered: ["已送达",   "Delivered"],
+        cancelled: ["已拒绝",   "Cancelled"],
+      };
+      const isZh = document.body.classList.contains("lang-zh");
+      const v = map[s] || [s, s];
+      return isZh ? v[0] : v[1];
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("[data-status]").forEach(el => {
+        el.textContent = statusLabel(el.dataset.status);
+      });
+    });
+
+    // Reorder: fetch historical items, replace cart, jump to /checkout
+    const CART_KEY = "vya_cart_v1";
+    document.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-reorder]");
+      if (!b) return;
+      const oid = b.dataset.reorder;
+      const tok = b.dataset.token;
+      const isZh = document.body.classList.contains("lang-zh");
+      const t = (zh, en) => isZh ? zh : en;
+      b.disabled = true;
+      const orig = b.innerHTML;
+      b.innerHTML = t("加载中…", "Loading…");
+      try {
+        const r = await fetch(`/api/order/${oid}/reorder?t=${tok}`);
+        const d = await r.json();
+        if (!d.success) {
+          alert(t("再下单失败:", "Reorder failed: ") + (d.error || ""));
+          b.disabled = false; b.innerHTML = orig; return;
+        }
+        if (!d.items || d.items.length === 0) {
+          alert(t("此订单的商品当前都已下架,无法再下。", "All items in this order are no longer available."));
+          b.disabled = false; b.innerHTML = orig; return;
+        }
+        // Build cart
+        const cart = {};
+        d.items.forEach(it => { cart[it.id] = it; });
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        // Tell user about skipped items
+        if (d.skipped && d.skipped.length) {
+          alert(t(
+            `已加入购物车。注意:以下商品当前不在售,已跳过:\n  ${d.skipped.join(", ")}`,
+            `Added to cart. Note: these items are no longer available and were skipped:\n  ${d.skipped.join(", ")}`
+          ));
+        }
+        location.href = "/checkout";
+      } catch (err) {
+        alert(t("网络错误,请重试", "Network error, please retry"));
+        b.disabled = false; b.innerHTML = orig;
+      }
+    });
+  </script>
+  <div class="tk-page">
+    <div class="tk-wrap">
+      <a href="/" class="tk-back">← <span class="lang zh">返回首页</span><span class="lang en">Back to home</span></a>
+
+      {# ---------- Search form ---------- #}
+      <div class="tk-card">
+        <div class="tk-stamp">查</div>
+        <h1>
+          <span class="lang zh">查询订单</span>
+          <span class="lang en">Track Orders</span>
+        </h1>
+        <p class="sub">
+          <span class="lang zh">输入手机号查看你所有的订单。</span>
+          <span class="lang en">Enter your phone to see all your orders.</span>
+        </p>
+
+        {% if error %}
+          <div class="tk-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+          <div class="tk-field">
+            <label>
+              <span class="lang zh">手机号(含国家码,如 +64...)</span>
+              <span class="lang en">Phone (with country code, e.g. +64...)</span>
+            </label>
+            <input type="tel" name="phone" value="{{ searched_phone }}"
+                   placeholder="+64..." required autofocus>
+          </div>
+          <button type="submit" class="tk-btn">
+            <span class="lang zh">查看我的订单 →</span>
+            <span class="lang en">Show my orders →</span>
+          </button>
+        </form>
+      </div>
+
+      {# ---------- Results list ---------- #}
+      {% if results is not none %}
+      <div class="tk-card tk-results">
+        <h2>
+          <span class="lang zh">你的订单</span>
+          <span class="lang en">Your orders</span>
+        </h2>
+        <p class="count">
+          <span class="lang zh">共找到 <strong>{{ results|length }}</strong> 条</span>
+          <span class="lang en"><strong>{{ results|length }}</strong> result{% if results|length != 1 %}s{% endif %}</span>
+        </p>
+
+        {% if results %}
+          {% for o in results %}
+            <div class="order-row">
+              <div class="id-pill">#{{ o.id }}</div>
+              <div class="meta">
+                <div class="top-line">
+                  <span class="pill pill-{{ o.payment_status }}" data-status="{{ o.payment_status }}">{{ o.payment_status }}</span>
+                  <span>{{ o.customer_name }}</span>
+                  <span style="color:var(--stamp);font-weight:600;">NZ$ {{ '%.2f'|format(o.total_cents/100) }}</span>
+                </div>
+                <div class="bottom-line">
+                  <span class="lang zh">送达 {{ o.delivery_date }} · 下单于 {{ o.created_at }}</span>
+                  <span class="lang en">Delivery {{ o.delivery_date }} · placed {{ o.created_at }}</span>
+                </div>
+              </div>
+              <div class="row-actions">
+                <a href="{{ url_for('order_view', oid=o.id, t=o.token) }}" class="view-btn">
+                  <span class="lang zh">查看 →</span>
+                  <span class="lang en">View →</span>
+                </a>
+                <button type="button" class="reorder-btn"
+                        data-reorder="{{ o.id }}" data-token="{{ o.token }}">
+                  <span class="lang zh">↻ 再下一单</span>
+                  <span class="lang en">↻ Reorder</span>
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="tk-noresult">
+            <span class="lang zh">没找到订单。</span>
+            <span class="lang en">No orders found.</span>
+          </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <p class="tk-help">
+        <span class="lang zh">订单号也在你收到的预约确认邮件 / 短信里。问题请微信 ya312322063</span>
+        <span class="lang en">Order # is in the email / SMS we sent. Questions? WeChat ya312322063</span>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

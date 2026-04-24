@@ -1,0 +1,48 @@
+{% extends "admin/_layout.html" %}
+{% block title %}订单{% endblock %}
+{% block content %}
+<h1 class="page-title">订单</h1>
+
+<div class="filter-row">
+  <a href="{{ url_for('admin.orders') }}" class="filter {{ 'on' if not status }}">全部</a>
+  <a href="{{ url_for('admin.orders', status='pending') }}"   class="filter {{ 'on' if status == 'pending' }}">待审核</a>
+  <a href="{{ url_for('admin.orders', status='confirmed') }}" class="filter {{ 'on' if status == 'confirmed' }}">已确认</a>
+  <a href="{{ url_for('admin.orders', status='delivered') }}" class="filter {{ 'on' if status == 'delivered' }}">已送达</a>
+  <a href="{{ url_for('admin.orders', status='cancelled') }}" class="filter {{ 'on' if status == 'cancelled' }}">已拒绝/取消</a>
+</div>
+
+{% if orders %}
+<table class="orders-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>下单时间</th>
+      <th>客户</th>
+      <th>电话</th>
+      <th>送达日</th>
+      <th>距离</th>
+      <th>金额</th>
+      <th>状态</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for o in orders %}
+      <tr>
+        <td>#{{ o.id }}</td>
+        <td>{{ o.created_at }}</td>
+        <td>{{ o.customer_name }}</td>
+        <td>{{ o.phone }}</td>
+        <td>{{ o.delivery_date }}</td>
+        <td>{{ '%.1f km'|format(o.distance_km) if o.distance_km else '—' }}</td>
+        <td>NZ$ {{ '%.2f'|format(o.total_cents / 100) }}</td>
+        <td><span class="pill pill-{{ o.payment_status }}">{{ o.payment_status }}</span></td>
+        <td><a href="{{ url_for('admin.order_detail', oid=o.id) }}">详情</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">暂无订单。</p>
+{% endif %}
+{% endblock %}

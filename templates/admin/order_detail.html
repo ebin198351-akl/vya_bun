@@ -1,0 +1,103 @@
+{% extends "admin/_layout.html" %}
+{% block title %}订单 #{{ order.id }}{% endblock %}
+{% block content %}
+<h1 class="page-title">订单 #{{ order.id }}</h1>
+<p><a href="{{ url_for('admin.orders') }}">← 返回列表</a></p>
+
+<div class="card">
+  <h2>客户信息</h2>
+  <dl class="kv">
+    <dt>姓名</dt><dd>{{ order.customer_name }}</dd>
+    <dt>电话</dt><dd>{{ order.phone }}</dd>
+    <dt>邮箱</dt><dd>{{ order.email or '—' }}</dd>
+    <dt>地址</dt><dd>{{ order.address }}</dd>
+    <dt>送达日期</dt><dd>{{ order.delivery_date }}</dd>
+    <dt>距离</dt><dd>{{ '%.1f km'|format(order.distance_km) if order.distance_km else '—' }}</dd>
+    <dt>起送数量</dt><dd>{{ order.min_order_qty or '—' }}</dd>
+    <dt>状态</dt><dd><span class="pill pill-{{ order.payment_status }}">{{ order.payment_status }}</span></dd>
+    <dt>创建时间</dt><dd>{{ order.created_at }}</dd>
+    {% if order.notes %}
+      <dt>备注</dt><dd>{{ order.notes }}</dd>
+    {% endif %}
+  </dl>
+</div>
+
+<div class="card">
+  <h2>商品明细</h2>
+  <table class="orders-table">
+    <thead><tr><th>商品</th><th>单价</th><th>数量</th><th>小计</th></tr></thead>
+    <tbody>
+      {% for it in items %}
+        <tr>
+          <td>{{ it.name_snapshot }}</td>
+          <td>NZ$ {{ '%.2f'|format(it.unit_price_cents / 100) }}</td>
+          <td>{{ it.quantity }}</td>
+          <td>NZ$ {{ '%.2f'|format(it.unit_price_cents * it.quantity / 100) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3" style="text-align:right">合计</td>
+          <td><strong>NZ$ {{ '%.2f'|format(order.total_cents / 100) }}</strong></td></tr>
+    </tfoot>
+  </table>
+</div>
+
+{# ==================== Action panel ==================== #}
+{% if order.payment_status == 'pending' %}
+<div class="card action-panel">
+  <h2>审核 · 确认或拒绝</h2>
+  <p class="hint">
+    确认后,客户会立即收到 <strong>邮件 + 短信</strong> 确认通知。
+    拒绝时可填原因(也会发给客户)。
+  </p>
+
+  <div class="action-grid">
+    <form method="post" action="{{ url_for('admin.order_confirm', oid=order.id) }}"
+          onsubmit="return confirm('确认接受订单 #{{ order.id }} 并通知客户?')"
+          class="confirm-form">
+      <label class="reject-label">
+        <span>给客户的补充说明(选填,会发到客户邮件 + 短信)</span>
+        <textarea name="note" rows="3"
+                  placeholder="如:周三下午 3-5 点之间送达,会再发短信提醒;或 已为您预留 2 笼;或 因高峰期送达可能晚 30 分钟,请见谅..."></textarea>
+        <small class="note-hint">空着就只发标准确认。SMS 端如超过 80 字会被截断(节省短信费),邮件不限。</small>
+      </label>
+      <button type="submit" class="action-btn confirm">
+        ✓ 确认订单 — 发邮件 + SMS
+      </button>
+    </form>
+
+    <form method="post" action="{{ url_for('admin.order_reject', oid=order.id) }}"
+          onsubmit="return confirm('确认拒绝订单 #{{ order.id }} 并通知客户?')"
+          class="reject-form">
+      <label class="reject-label">
+        <span>拒绝原因(选填,会发给客户)</span>
+        <textarea name="reason" rows="3"
+                  placeholder="如:该日期已订满 / 距离超出配送范围 / 库存不足"></textarea>
+      </label>
+      <button type="submit" class="action-btn reject">
+        ✗ 拒绝订单 — 发拒绝通知
+      </button>
+    </form>
+  </div>
+</div>
+{% elif order.payment_status == 'confirmed' %}
+<div class="card action-panel">
+  <h2>已确认 ✓</h2>
+  <p class="hint">客户已收到确认邮件 + SMS。送达后可点下方标记完成。</p>
+  <form method="post" action="{{ url_for('admin.order_mark_delivered', oid=order.id) }}">
+    <button type="submit" class="action-btn confirm">标记为已送达</button>
+  </form>
+</div>
+{% elif order.payment_status == 'cancelled' %}
+<div class="card action-panel">
+  <h2>已拒绝 / 取消</h2>
+  <p class="hint">客户已收到拒绝通知。无需进一步操作。</p>
+</div>
+{% elif order.payment_status == 'delivered' %}
+<div class="card action-panel">
+  <h2>已送达</h2>
+  <p class="hint">订单流程已完成。</p>
+</div>
+{% endif %}
+{% endblock %}

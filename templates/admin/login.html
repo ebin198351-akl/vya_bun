@@ -1,0 +1,13 @@
+{% extends "admin/_layout.html" %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<div class="login-card">
+  <div class="login-stamp">薇</div>
+  <h1>薇雅厨房 · 后台</h1>
+  <p class="hint">请输入管理密码</p>
+  <form method="post" autocomplete="off">
+    <input type="password" name="password" placeholder="Password" autofocus required>
+    <button type="submit" class="btn-primary">进入</button>
+  </form>
+</div>
+{% endblock %}

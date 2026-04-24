@@ -1,0 +1,66 @@
+{% extends "admin/_layout.html" %}
+{% block title %}概览{% endblock %}
+{% block content %}
+<h1 class="page-title">概览</h1>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-label">菜单总数</div>
+    <div class="stat-value">{{ items|length }}</div>
+    <div class="stat-sub">在售 {{ items|selectattr('active')|list|length }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">本周菜单</div>
+    <div class="stat-value">{{ weekly_now|length }}/4</div>
+    <div class="stat-sub">{{ date_label(this_week_start) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">下周菜单</div>
+    <div class="stat-value">{{ weekly_next|length }}/4</div>
+    <div class="stat-sub">{{ date_label(next_week_start) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">待审核订单</div>
+    <div class="stat-value">{{ pending|length }}</div>
+    <div class="stat-sub"><a href="{{ url_for('admin.orders', status='pending') }}">立即审核 →</a></div>
+  </div>
+</div>
+
+<div class="card-row">
+  <section class="card">
+    <h2>本周排单 <span class="muted">{{ date_label(this_week_start) }}</span></h2>
+    {% if weekly_now %}
+      <ol class="weekly-list">
+        {% for pos, it in weekly_now %}
+          <li>
+            <span class="pos">#{{ pos }}</span>
+            <img src="/{{ it.image }}" alt="">
+            <span class="name">{{ it.name_zh }}</span>
+            <span class="muted">{{ it.name_en }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="empty">尚未设置本周菜单。<a href="{{ url_for('admin.weekly') }}">去设置 →</a></p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>下周预告 <span class="muted">{{ date_label(next_week_start) }}</span></h2>
+    {% if weekly_next %}
+      <ol class="weekly-list">
+        {% for pos, it in weekly_next %}
+          <li>
+            <span class="pos">#{{ pos }}</span>
+            <img src="/{{ it.image }}" alt="">
+            <span class="name">{{ it.name_zh }}</span>
+            <span class="muted">{{ it.name_en }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="empty">尚未设置下周菜单。<a href="{{ url_for('admin.weekly') }}">去设置 →</a></p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

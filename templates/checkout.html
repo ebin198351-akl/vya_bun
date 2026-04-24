@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>结算 · Checkout · 薇雅厨房</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;600&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WFR49LE0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-1WFR49LE0G', { send_page_view: true });
+    window.vyaTrack = function (event, params) {
+      try { gtag('event', event, params || {}); } catch (e) {}
+    };
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  {% if maps_enabled and google_maps_key %}
+  <script>
+    window.__gmapsReady = false;
+    function __gmapsInit() {
+      window.__gmapsReady = true;
+      window.dispatchEvent(new Event("gmapsready"));
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=__gmapsInit&loading=async" async defer></script>
+  {% endif %}
+  <style>
+    /* Page-local checkout styles */
+    .co-page { background: var(--paper); min-height: 100vh; padding: 80px 0 60px; }
+    .co-wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+    .co-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--soy); margin-bottom: 18px; font-size: 14px;
+    }
+    .co-title {
+      font-family: "Noto Serif SC", serif;
+      font-size: 32px; color: var(--soy); margin: 0 0 8px;
+    }
+    .co-title small {
+      font-family: "Ma Shan Zheng", serif;
+      font-size: 18px; color: var(--stamp); margin-left: 12px;
+      transform: rotate(-3deg); display: inline-block;
+    }
+    .co-grid {
+      display: grid; gap: 24px;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: start; margin-top: 24px;
+    }
+    @media (max-width: 760px) { .co-grid { grid-template-columns: 1fr; } }
+
+    .co-card {
+      background: #fff; border-radius: 16px;
+      padding: 22px 26px;
+      box-shadow: 0 12px 28px rgba(58, 31, 15, 0.10), 0 2px 6px rgba(58, 31, 15, 0.05);
+      margin-bottom: 18px;
+    }
+    .co-card h2 {
+      font-family: "Noto Serif SC", serif;
+      font-size: 18px; color: var(--soy); margin: 0 0 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .co-card h2 .num {
+      display: inline-flex; width: 26px; height: 26px;
+      background: var(--stamp); color: #fff;
+      border-radius: 6px; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; transform: rotate(-3deg);
+    }
+
+    .co-summary { padding: 14px 18px; }
+    .co-summary .row {
+      display: grid; grid-template-columns: 44px 1fr;
+      gap: 10px; align-items: center; padding: 12px 0;
+      border-top: 1px dashed rgba(58, 31, 15, 0.12);
+    }
+    .co-summary .row:first-of-type { border-top: none; }
+    .co-summary img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; }
+    .co-summary .name { font-weight: 600; color: var(--soy); font-size: 14px; }
+    .co-summary .meta { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .co-summary .price-line {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 8px; gap: 10px;
+    }
+    .co-summary .price-line .subtotal {
+      font-weight: 600; color: var(--stamp); font-size: 14px; white-space: nowrap;
+    }
+    .co-summary .qty-stepper {
+      display: inline-flex; align-items: center;
+      border: 1.5px solid rgba(58, 31, 15, 0.18);
+      border-radius: 999px; background: #fff;
+    }
+    .co-summary .qty-stepper button {
+      background: transparent; border: none;
+      width: 30px; height: 30px; font-size: 16px; color: var(--soy);
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .co-summary .qty-stepper button:hover:not(:disabled) {
+      background: rgba(192, 56, 42, 0.12);
+    }
+    .co-summary .qty-stepper input {
+      width: 40px; text-align: center; border: none; background: transparent;
+      font-family: inherit; font-size: 14px; color: var(--soy); font-weight: 600;
+      -moz-appearance: textfield;
+    }
+    .co-summary .qty-stepper input::-webkit-inner-spin-button,
+    .co-summary .qty-stepper input::-webkit-outer-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    .co-summary .remove {
+      background: none; border: none; color: #9ca3af;
+      font-size: 11px; cursor: pointer; padding: 0;
+      text-decoration: underline;
+    }
+    .co-summary .remove:hover { color: var(--stamp); }
+    .co-summary .totals { padding-top: 12px; border-top: 1.5px solid rgba(58, 31, 15, 0.16); margin-top: 12px; }
+    .co-summary .totals .line {
+      display: flex; justify-content: space-between; font-size: 14px;
+      color: var(--soy); margin: 4px 0;
+    }
+    .co-summary .totals .line.grand {
+      font-family: "Noto Serif SC", serif;
+      font-size: 20px; padding-top: 6px;
+    }
+    .co-summary .totals .grand strong { color: var(--stamp); }
+
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field label { font-size: 13px; color: var(--soy); font-weight: 500; }
+    .field input, .field textarea, .field select {
+      padding: 10px 14px; border: 1.5px solid rgba(58, 31, 15, 0.18);
+      border-radius: 8px; font-family: inherit; font-size: 14px;
+      background: #fff; color: var(--ink); transition: border 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: none; border-color: var(--stamp);
+      box-shadow: 0 0 0 3px rgba(192, 56, 42, 0.12);
+    }
+    .field textarea { min-height: 70px; resize: vertical; }
+
+    .quote-box {
+      padding: 14px 18px; border-radius: 12px;
+      background: var(--paper-deep);
+      border-left: 4px solid var(--soy-mid);
+      font-size: 14px; color: var(--soy);
+      transition: all 0.2s;
+    }
+    .quote-box.ok      { background: rgba(91, 122, 82, 0.10); border-left-color: var(--bamboo); }
+    .quote-box.warn    { background: #fef3c7; border-left-color: #d97706; color: #92400e; }
+    .quote-box.error   { background: #fee2e2; border-left-color: #dc2626; color: #991b1b; }
+    .quote-box .q-line + .q-line { margin-top: 4px; }
+    .quote-box strong  { color: var(--stamp); }
+    .quote-box.ok strong { color: var(--bamboo); }
+
+    .region-picker { display: none; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .region-picker.show { display: flex; }
+    .region-picker label {
+      padding: 8px 14px; border-radius: 999px; border: 1.5px solid rgba(58, 31, 15, 0.16);
+      cursor: pointer; font-size: 13px; background: #fff;
+    }
+    .region-picker input { display: none; }
+    .region-picker label:has(input:checked) {
+      background: var(--stamp); color: #fff7ed; border-color: transparent;
+    }
+
+    .submit-row {
+      position: sticky; bottom: 0;
+      background: linear-gradient(180deg, transparent, var(--paper) 30%);
+      padding: 18px 0 0; margin-top: 12px;
+    }
+    .submit-btn {
+      display: block; width: 100%;
+      padding: 16px 22px; border-radius: 12px;
+      background: var(--stamp); color: #fff7ed;
+      font-family: "Noto Serif SC", serif;
+      font-size: 17px; font-weight: 600; letter-spacing: 0.04em;
+      border: none; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(192, 56, 42, 0.35);
+    }
+    .submit-btn:disabled {
+      background: #d1d5db; cursor: not-allowed; color: #6b7280;
+    }
+    .submit-error { color: #991b1b; font-size: 13px; text-align: center; margin-top: 10px; }
+    .submit-hint { color: #6b7280; font-size: 12px; text-align: center; margin-top: 8px; }
+    .empty-cart { text-align: center; padding: 60px 20px; color: #9ca3af; }
+    .empty-cart a { color: var(--stamp); }
+
+    /* Google Places Autocomplete dropdown (pac-container) */
+    .pac-container {
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(58, 31, 15, 0.16), 0 2px 6px rgba(58, 31, 15, 0.08);
+      border: 1px solid rgba(58, 31, 15, 0.1);
+      background: #fff;
+      font-family: "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+      margin-top: 4px;
+      padding: 4px 0;
+    }
+    .pac-item {
+      padding: 8px 14px;
+      font-size: 13px;
+      border-top: 1px solid rgba(58, 31, 15, 0.06);
+      cursor: pointer;
+      color: var(--soy);
+    }
+    .pac-item:first-child { border-top: none; }
+    .pac-item:hover, .pac-item-selected {
+      background: rgba(192, 56, 42, 0.08);
+    }
+    .pac-item-query { color: var(--soy); font-weight: 600; }
+    .pac-matched { color: var(--stamp); }
+    .pac-icon { display: none; }    /* hide default icons, cleaner */
+    .addr-hint {
+      font-size: 12px; color: var(--soy-mid);
+      margin: 6px 0 0; display: flex; gap: 4px; align-items: center;
+    }
+    .addr-hint::before { content: "💡"; }
+  </style>
+</head>
+<body class="lang-zh">
+  <div class="co-page">
+    <div class="co-wrap">
+      <a href="/" class="co-back">← <span class="lang zh">返回首页</span><span class="lang en">Back to home</span></a>
+      <h1 class="co-title">
+        <span class="lang zh">结算</span><span class="lang en">Checkout</span>
+        <small>
+          <span class="lang zh">付款·配送</span>
+          <span class="lang en">Pay · Deliver</span>
+        </small>
+      </h1>
+
+      <div id="empty-state" class="empty-cart" hidden>
+        <p class="lang zh">购物车是空的。<a href="/#menu">先去选包子 →</a></p>
+        <p class="lang en">Your cart is empty. <a href="/#menu">Pick some buns →</a></p>
+      </div>
+
+      <div id="co-main" class="co-grid" hidden>
+
+        <!-- LEFT: form -->
+        <div>
+          <div class="co-card">
+            <h2><span class="num">1</span> <span class="lang zh">送货地址</span><span class="lang en">Delivery Address</span></h2>
+            <div class="field">
+              <label>
+                <span class="lang zh">详细地址(街道+门牌+邮编)</span>
+                <span class="lang en">Full address (street + number + postcode)</span>
+              </label>
+              <input type="text" id="address-input" autocomplete="off"
+                     placeholder="e.g. 12 Smith Street, Takapuna, Auckland 0622">
+              {% if maps_enabled %}
+              <p class="addr-hint">
+                <span class="lang zh">开始输入即可从下拉列表选地址(更准)</span>
+                <span class="lang en">Start typing and pick from the dropdown for best accuracy</span>
+              </p>
+              {% endif %}
+            </div>
+            <div class="region-picker" id="region-picker">
+              <span style="font-size:13px; color:var(--soy); width:100%;">
+                <span class="lang zh">无法自动识别。请选择你所在区域:</span>
+                <span class="lang en">Couldn't auto-detect. Please pick your region:</span>
+              </span>
+              <label><input type="radio" name="region" value="north_shore"><span class="lang zh">北岸</span><span class="lang en">North Shore</span></label>
+              <label><input type="radio" name="region" value="central"><span class="lang zh">中区(CBD)</span><span class="lang en">Central</span></label>
+              <label><input type="radio" name="region" value="west"><span class="lang zh">西区</span><span class="lang en">West</span></label>
+              <label><input type="radio" name="region" value="east"><span class="lang zh">东区</span><span class="lang en">East</span></label>
+            </div>
+            <div id="quote-box" class="quote-box" style="margin-top:14px;">
+              <span class="lang zh">输入地址后,我们会算出最少起送数量。</span>
+              <span class="lang en">Enter your address — we'll work out the minimum order.</span>
+            </div>
+          </div>
+
+          <div class="co-card">
+            <h2><span class="num">2</span> <span class="lang zh">联系方式</span><span class="lang en">Contact Details</span></h2>
+            <div class="field">
+              <label><span class="lang zh">姓名</span><span class="lang en">Name</span></label>
+              <input type="text" id="cust-name" required>
+            </div>
+            <div class="field">
+              <label><span class="lang zh">手机(收 SMS 通知)</span><span class="lang en">Mobile (for SMS)</span></label>
+              <input type="tel" id="cust-phone" placeholder="+64..." required>
+            </div>
+            <div class="field">
+              <label><span class="lang zh">邮箱(可选,收订单确认)</span><span class="lang en">Email (optional, order confirmation)</span></label>
+              <input type="email" id="cust-email">
+            </div>
+            <div class="field">
+              <label><span class="lang zh">备注(可选)</span><span class="lang en">Notes (optional)</span></label>
+              <textarea id="cust-notes"
+                data-ph-zh="如:留门口/到了打电话/请少放盐"
+                data-ph-en="e.g. leave at door / call on arrival / less salt please"
+                placeholder="如:留门口/到了打电话/请少放盐"></textarea>
+            </div>
+          </div>
+
+          <div class="co-card">
+            <h2><span class="num">3</span> <span class="lang zh">送达日期</span><span class="lang en">Delivery Date</span></h2>
+            <div class="field">
+              <select id="delivery-date" required>
+                {% for d in delivery_dates %}
+                  <option value="{{ d.iso }}" data-label-zh="{{ d.label_zh }}" data-label-en="{{ d.label_en }}">
+                    {{ d.label_zh }} / {{ d.label_en }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            <p style="font-size:12px;color:#6b7280;margin:0;">
+              <span class="lang zh">每天 18:00 截单 → 次日送达。周六不做单。</span>
+              <span class="lang en">Order by 18:00 for next-day delivery. We're closed Saturdays.</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- RIGHT: order summary + submit -->
+        <div>
+          <div class="co-card co-summary" id="summary">
+            <h2><span class="num">4</span> <span class="lang zh">订单概要</span><span class="lang en">Order Summary</span></h2>
+            <div id="summary-rows"></div>
+            <div class="totals">
+              <div class="line"><span class="lang zh">数量</span><span class="lang en">Qty</span><strong id="t-qty">0</strong></div>
+              <div class="line"><span class="lang zh">起送量</span><span class="lang en">Minimum</span><strong id="t-min">—</strong></div>
+              <div class="line grand">
+                <span class="lang zh">合计</span><span class="lang en">Total</span>
+                <strong>NZ$ <span id="t-total">0.00</span></strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="submit-row">
+            <button type="button" class="submit-btn" id="submit-btn" disabled>
+              <span class="lang zh">提交预约 →</span>
+              <span class="lang en">Submit reservation →</span>
+            </button>
+            <p id="submit-error" class="submit-error" hidden></p>
+            <p id="submit-hint" class="submit-hint">
+              <span class="lang zh">提交后我们会尽快通过邮件和短信与你确认 库存 / 送达时间 / 地址,确认后再开始制作。无需在线支付。</span>
+              <span class="lang en">After you submit, we'll confirm stock, delivery time and address by email + SMS, then start prep. No online payment needed.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const CART_KEY = "vya_cart_v1";
+      const MAPS_ENABLED = {{ 'true' if maps_enabled else 'false' }};
+      const $empty = document.getElementById("empty-state");
+      const $main = document.getElementById("co-main");
+      const $rows = document.getElementById("summary-rows");
+      const $tQty = document.getElementById("t-qty");
+      const $tMin = document.getElementById("t-min");
+      const $tTotal = document.getElementById("t-total");
+      const $addr = document.getElementById("address-input");
+      const $quote = document.getElementById("quote-box");
+      const $regionPicker = document.getElementById("region-picker");
+      const $regionInputs = document.querySelectorAll('input[name="region"]');
+      const $submit = document.getElementById("submit-btn");
+      const $err = document.getElementById("submit-error");
+
+      // language sync from localStorage if used (simple: default zh)
+      let lang = localStorage.getItem("vya_lang") || "zh";
+      function applyLang(l) {
+        lang = l;
+        document.body.classList.remove("lang-zh", "lang-en");
+        document.body.classList.add("lang-" + l);
+        document.documentElement.setAttribute("lang", l === "zh" ? "zh-CN" : "en");
+        localStorage.setItem("vya_lang", l);
+        // swap placeholders with data-ph-zh/data-ph-en attrs
+        document.querySelectorAll("[data-ph-zh],[data-ph-en]").forEach(el => {
+          const v = l === "zh" ? el.dataset.phZh : el.dataset.phEn;
+          if (v) el.placeholder = v;
+        });
+      }
+      applyLang(lang);
+      // tiny i18n helper for dynamic strings
+      function t(zh, en) { return lang === "zh" ? zh : en; }
+
+      // ----- cart -----
+      function loadCart() {
+        try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; }
+        catch (e) { return {}; }
+      }
+      const cart = loadCart();
+      const ids = Object.keys(cart);
+      if (ids.length === 0) { $empty.hidden = false; $main.hidden = true; return; }
+
+      // GA4 helpers
+      function gaItems(c) {
+        return Object.values(c).map(x => ({
+          item_id: x.sku || ("id_" + x.id),
+          item_name: x.name_zh,
+          item_category: x.category || "",
+          price: x.price_cents / 100,
+          quantity: x.qty,
+        }));
+      }
+      function gaValue(c) {
+        return Object.values(c).reduce((s, x) => s + x.price_cents * x.qty, 0) / 100;
+      }
+      // Fire begin_checkout once per page-load
+      window.vyaTrack && window.vyaTrack("begin_checkout", {
+        currency: "NZD",
+        value: gaValue(cart),
+        items: gaItems(cart),
+      });
+      let _shippingTracked = false;
+
+      function renderSummary() {
+        const c = loadCart();
+        const ids = Object.keys(c);
+        let qty = 0, total = 0;
+        if (ids.length === 0) {
+          // Cart became empty after user removed everything → bounce to home
+          location.href = "/#menu";
+          return { qty: 0, total: 0 };
+        }
+        $rows.innerHTML = ids.map(id => {
+          const it = c[id];
+          qty += it.qty;
+          total += it.qty * it.price_cents;
+          const subtotal = (it.qty * it.price_cents / 100).toFixed(2);
+          return `<div class="row">
+            <img src="/${it.image}" alt="">
+            <div>
+              <div class="name">${lang === "zh" ? it.name_zh : it.name_en}</div>
+              <div class="meta">${lang === "zh" ? it.name_en : it.name_zh} · NZ$ ${(it.price_cents/100).toFixed(2)} / ${t("只", "pc")}</div>
+              <div class="price-line">
+                <div class="qty-stepper">
+                  <button type="button" data-sum-dec="${id}" aria-label="−">−</button>
+                  <input type="number" min="0" value="${it.qty}" data-sum-qty="${id}">
+                  <button type="button" data-sum-inc="${id}" aria-label="+">+</button>
+                </div>
+                <span class="subtotal">NZ$ ${subtotal}</span>
+              </div>
+              <button type="button" class="remove" data-sum-remove="${id}">${t("删除", "Remove")}</button>
+            </div>
+          </div>`;
+        }).join("");
+        $tQty.textContent = qty;
+        $tTotal.textContent = (total / 100).toFixed(2);
+        return { qty, total };
+      }
+      renderSummary();
+
+      // ----- mutate cart from the summary -----
+      function setItemQty(id, qty) {
+        qty = Math.max(0, parseInt(qty, 10) || 0);
+        const c = loadCart();
+        if (qty === 0) delete c[id];
+        else if (c[id]) c[id].qty = qty;
+        localStorage.setItem(CART_KEY, JSON.stringify(c));
+        renderSummary();
+        // Re-display the quote line using the NEW qty
+        if (currentQuote) updateQuote(currentQuote);
+        updateSubmit();
+      }
+      document.addEventListener("click", e => {
+        const t = e.target.closest(
+          "[data-sum-inc],[data-sum-dec],[data-sum-remove]"
+        );
+        if (!t) return;
+        const id = t.dataset.sumInc || t.dataset.sumDec || t.dataset.sumRemove;
+        const c = loadCart();
+        const cur = c[id]?.qty || 0;
+        if (t.dataset.sumInc)     setItemQty(id, cur + 1);
+        else if (t.dataset.sumDec) setItemQty(id, cur - 1);
+        else                       setItemQty(id, 0);
+      });
+      document.addEventListener("input", e => {
+        const t = e.target;
+        if (t.matches("[data-sum-qty]")) setItemQty(t.dataset.sumQty, t.value);
+      });
+
+      // ----- distance quote -----
+      let currentQuote = null;
+      let quoteTimer = null;
+
+      function updateQuote(payload) {
+        currentQuote = payload;
+        if (payload.fallback) {
+          $quote.className = "quote-box warn";
+          $quote.innerHTML = `<div class="q-line">⚠ ${payload.error || ""}</div>`;
+          $regionPicker.classList.add("show");
+          $tMin.textContent = "—";
+          updateSubmit();
+          return;
+        }
+        $regionPicker.classList.remove("show");
+        if (!payload.deliverable) {
+          $quote.className = "quote-box error";
+          $quote.innerHTML = `<div class="q-line">✗ ${payload.error || t("无法配送", "Cannot deliver")}</div>`;
+          $tMin.textContent = "—";
+          updateSubmit();
+          return;
+        }
+        const { qty } = renderSummary();
+        const ok = qty >= payload.min_qty;
+        $quote.className = "quote-box " + (ok ? "ok" : "warn");
+        const distLine = payload.distance_km
+          ? `<div class="q-line">📍 ${t("距离", "Distance")} <strong>${payload.distance_km.toFixed(1)} km</strong>${payload.bucket_label ? ` (${payload.bucket_label})` : ""}</div>`
+          : "";
+        const statusTxt = ok
+          ? "✓"
+          : t(`(还差 ${payload.min_qty - qty} 个)`, `(${payload.min_qty - qty} more to go)`);
+        $quote.innerHTML = distLine + `<div class="q-line">${
+          t(
+            `起送 <strong>${payload.min_qty}</strong> 个 · 你已选 <strong>${qty}</strong> 个 ${statusTxt}`,
+            `Minimum <strong>${payload.min_qty}</strong> pcs · You have <strong>${qty}</strong> ${statusTxt}`
+          )
+        }</div>`;
+        $tMin.textContent = t(`${payload.min_qty} 个`, `${payload.min_qty} pcs`);
+        // GA4: add_shipping_info — only once per session per quote
+        if (!_shippingTracked) {
+          _shippingTracked = true;
+          window.vyaTrack && window.vyaTrack("add_shipping_info", {
+            currency: "NZD",
+            value: gaValue(loadCart()),
+            shipping_tier: payload.bucket_label || ("region_" + payload.min_qty),
+            items: gaItems(loadCart()),
+          });
+        }
+        updateSubmit();
+      }
+
+      async function fetchQuote(opts) {
+        try {
+          const r = await fetch("/api/quote-delivery", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(opts),
+          });
+          updateQuote(await r.json());
+        } catch (e) {
+          $quote.className = "quote-box error";
+          $quote.innerHTML = `<div class="q-line">✗ ${t("网络错误,请重试", "Network error, please retry")}</div>`;
+        }
+      }
+
+      $addr.addEventListener("input", () => {
+        clearTimeout(quoteTimer);
+        const v = $addr.value.trim();
+        if (v.length < 6) {
+          $quote.className = "quote-box";
+          $quote.innerHTML = t(
+            "输入地址后,我们会算出最少起送数量。",
+            "Enter your address — we'll work out the minimum order."
+          );
+          currentQuote = null; updateSubmit(); return;
+        }
+        if (!MAPS_ENABLED) {
+          // skip auto-quote, force region pick
+          $regionPicker.classList.add("show");
+          $quote.className = "quote-box warn";
+          $quote.innerHTML = `<div class="q-line">⚠ ${t("自动距离计算未启用,请选区域。", "Auto distance is disabled — please pick a region.")}</div>`;
+          currentQuote = null; updateSubmit(); return;
+        }
+        quoteTimer = setTimeout(() => fetchQuote({address: v}), 600);
+      });
+
+      $regionInputs.forEach(r => r.addEventListener("change", () => {
+        if (r.checked) fetchQuote({region: r.value});
+      }));
+
+      // ----- Google Places Autocomplete (if enabled) -----
+      function setupAutocomplete() {
+        if (!window.google || !google.maps || !google.maps.places) return;
+        try {
+          const ac = new google.maps.places.Autocomplete($addr, {
+            componentRestrictions: { country: "nz" },
+            fields: ["formatted_address", "geometry", "name"],
+            types: ["address"],
+            // Bias to the kitchen area (Auckland North Shore)
+            bounds: new google.maps.LatLngBounds(
+              new google.maps.LatLng(-37.10, 174.55),
+              new google.maps.LatLng(-36.55, 175.00),
+            ),
+            strictBounds: false,
+          });
+          ac.addListener("place_changed", () => {
+            const place = ac.getPlace();
+            if (place && place.formatted_address) {
+              $addr.value = place.formatted_address;
+              clearTimeout(quoteTimer);
+              fetchQuote({ address: place.formatted_address });
+            }
+          });
+          // Prevent form submit when user hits Enter in autocomplete
+          $addr.addEventListener("keydown", e => {
+            if (e.key === "Enter") e.preventDefault();
+          });
+          console.log("[vya] Places Autocomplete ready");
+        } catch (e) {
+          console.error("[vya] Autocomplete setup failed", e);
+        }
+      }
+      if (window.__gmapsReady) setupAutocomplete();
+      else window.addEventListener("gmapsready", setupAutocomplete);
+
+      // re-render summary if cart changed in another tab
+      window.addEventListener("storage", e => {
+        if (e.key === CART_KEY) {
+          if (Object.keys(loadCart()).length === 0) {
+            location.reload();
+          } else {
+            renderSummary();
+            if (currentQuote) updateQuote(currentQuote);
+          }
+        }
+      });
+
+      // ----- submit -----
+      function updateSubmit() {
+        const c = loadCart();
+        const qty = Object.values(c).reduce((s, x) => s + x.qty, 0);
+        const name = document.getElementById("cust-name").value.trim();
+        const phone = document.getElementById("cust-phone").value.trim();
+        const addr = $addr.value.trim();
+        const ok = qty > 0
+          && currentQuote && currentQuote.deliverable
+          && qty >= currentQuote.min_qty
+          && name && phone && addr;
+        $submit.disabled = !ok;
+        $err.hidden = true;
+      }
+
+      ["cust-name", "cust-phone", "cust-email", "cust-notes",
+       "delivery-date", "address-input"]
+        .forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.addEventListener("input", updateSubmit);
+          if (el) el.addEventListener("change", updateSubmit);
+        });
+
+      $submit.addEventListener("click", async () => {
+        $submit.disabled = true;
+        $submit.textContent = t("提交中...", "Submitting...");
+        $err.hidden = true;
+        try {
+          const c = loadCart();
+          const items = Object.values(c).map(x => ({id: x.id, qty: x.qty}));
+          const payload = {
+            items,
+            customer: {
+              name: document.getElementById("cust-name").value.trim(),
+              phone: document.getElementById("cust-phone").value.trim(),
+              email: document.getElementById("cust-email").value.trim(),
+              address: $addr.value.trim(),
+              notes: document.getElementById("cust-notes").value.trim(),
+              language: lang,
+            },
+            delivery_date: document.getElementById("delivery-date").value,
+            distance_km: currentQuote && currentQuote.distance_km,
+            region: (document.querySelector('input[name="region"]:checked') || {}).value || null,
+          };
+          const r = await fetch("/api/order/create", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload),
+          });
+          const data = await r.json();
+          if (!data.success) {
+            $err.textContent = data.error || "Order failed";
+            $err.hidden = false;
+            $submit.disabled = false;
+            $submit.innerHTML = '<span class="lang zh">提交预约 →</span><span class="lang en">Submit reservation →</span>';
+            return;
+          }
+          // success — stash cart snapshot so the success page can fire `purchase`
+          // (cart will be cleared, but order_success uses server data anyway)
+          try {
+            sessionStorage.setItem(
+              "vya_pending_purchase",
+              JSON.stringify({ order_id: data.order_id, ts: Date.now() }),
+            );
+          } catch (e) {}
+          localStorage.removeItem(CART_KEY);
+          location.href = data.redirect_url;
+        } catch (e) {
+          $err.textContent = "Network error: " + e.message;
+          $err.hidden = false;
+          $submit.disabled = false;
+          $submit.innerHTML = '<span class="lang zh">提交预约 →</span><span class="lang en">Submit reservation →</span>';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

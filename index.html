@@ -3,27 +3,129 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vya's Kitchen – Handmade Buns &amp; Dumplings</title>
-    <meta
-      name="description"
-      content="Vya's Kitchen – 手工包子 &amp; 饺子，用家常配方和新鲜食材，带来暖心的中式面点。"
-    />
-    <!-- Google Tag Manager -->
-<!-- Google tag (gtag.js) -->
+
+    <!-- =============== SEO: title + description =============== -->
+    <title>薇雅厨房 Vya's Kitchen | 奥克兰手工包子配送 · Handmade Chinese Buns Auckland</title>
+    <meta name="description" content="奥克兰北岸 Sunnynook 家庭手工厨房,每周精选 4 款现包现蒸中式包子,18:00 前下单次日送达。Auckland North Shore home kitchen — handmade Chinese buns, weekly menu, next-day delivery." />
+    <meta name="keywords" content="奥克兰包子,Auckland 包子,北岸 包子,Sunnynook,handmade buns,Chinese buns Auckland,baozi,手工包子,薇雅厨房,Vya's Kitchen,中式面点,北岸外卖" />
+    <meta name="author" content="Vya's Kitchen 薇雅厨房" />
+    <meta name="theme-color" content="#c0382a" />
+
+    <!-- =============== Canonical + hreflang =============== -->
+    <link rel="canonical" href="https://vyaskitchen.co.nz/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://vyaskitchen.co.nz/" />
+    <link rel="alternate" hreflang="en"    href="https://vyaskitchen.co.nz/" />
+    <link rel="alternate" hreflang="x-default" href="https://vyaskitchen.co.nz/" />
+
+    <!-- =============== Open Graph (Facebook / WeChat / WhatsApp / Messenger) =============== -->
+    <meta property="og:type" content="restaurant.restaurant" />
+    <meta property="og:site_name" content="Vya's Kitchen 薇雅厨房" />
+    <meta property="og:title" content="薇雅厨房 Vya's Kitchen | 奥克兰手工包子配送" />
+    <meta property="og:description" content="奥克兰北岸 Sunnynook 家庭手工厨房,每周精选 4 款现包现蒸中式包子。Order online — next-day delivery across Auckland." />
+    <meta property="og:url" content="https://vyaskitchen.co.nz/" />
+    <meta property="og:image" content="https://vyaskitchen.co.nz/image/logo.jpg" />
+    <meta property="og:image:alt" content="Vya's Kitchen handmade Chinese buns" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale:alternate" content="en_NZ" />
+
+    <!-- =============== Twitter Card =============== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="薇雅厨房 Vya's Kitchen — Handmade Chinese Buns Auckland" />
+    <meta name="twitter:description" content="奥克兰北岸手工包子,每周 4 款,现包现蒸,次日送达。" />
+    <meta name="twitter:image" content="https://vyaskitchen.co.nz/image/logo.jpg" />
+
+    <!-- =============== Icons =============== -->
+    <link rel="icon" type="image/jpeg" href="/image/logo.jpg" />
+    <link rel="apple-touch-icon" href="/image/logo.jpg" />
+
+    <!-- =============== Schema.org JSON-LD: Restaurant =============== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "@id": "https://vyaskitchen.co.nz/#restaurant",
+      "name": "Vya's Kitchen 薇雅厨房",
+      "alternateName": ["薇雅厨房", "Vya Kitchen", "Vya's Kitchen Handmade Buns"],
+      "description": "Auckland North Shore home kitchen specialising in handmade Chinese buns (baozi). Weekly rotating menu of 4 freshly steamed flavours, next-day delivery.",
+      "url": "https://vyaskitchen.co.nz/",
+      "logo": "https://vyaskitchen.co.nz/image/logo.jpg",
+      "image": [
+        "https://vyaskitchen.co.nz/image/logo.jpg",
+        "https://vyaskitchen.co.nz/image/product/酱肉包/酱肉包.jpg",
+        "https://vyaskitchen.co.nz/image/product/猪肉玉米胡萝卜/猪肉玉米胡萝卜.jpg"
+      ],
+      "telephone": "+64-21-230-3896",
+      "email": "vya2025.kitchen@gmail.com",
+      "priceRange": "$",
+      "servesCuisine": ["Chinese", "Northern Chinese", "Buns", "Baozi"],
+      "acceptsReservations": "True",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Laurina Road",
+        "addressLocality": "Sunnynook",
+        "addressRegion": "Auckland",
+        "postalCode": "0620",
+        "addressCountry": "NZ"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -36.7539,
+        "longitude": 174.7449
+      },
+      "areaServed": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": -36.7539,
+          "longitude": 174.7449
+        },
+        "geoRadius": "30000"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Sunday",
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      ],
+      "menu": "https://vyaskitchen.co.nz/#menu",
+      "hasMenu": {
+        "@type": "Menu",
+        "name": "本周菜单 / Weekly Menu",
+        "url": "https://vyaskitchen.co.nz/#menu"
+      },
+      "sameAs": []
+    }
+    </script>
+
+    <!-- MENU_JSONLD -->
+
+    <!-- Google Analytics 4 (gtag.js) — measurement id G-1WFR49LE0G -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WFR49LE0G"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-  gtag('config', 'G-1WFR49LE0G');
+  gtag('config', 'G-1WFR49LE0G', { send_page_view: true });
+  // Tiny safe wrapper used across pages
+  window.vyaTrack = function (event, params) {
+    try { gtag('event', event, params || {}); } catch (e) { /* no-op */ }
+  };
 </script>
-  <!-- End Google Tag Manager -->
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="lang-zh">
     <header class="site-header">
@@ -50,6 +152,8 @@
           <a href="#order" class="lang en">Order</a>
           <a href="#location" class="lang zh">地址 &amp; 营业时间</a>
           <a href="#location" class="lang en">Location</a>
+          <a href="/track" class="lang zh nav-track">查询订单</a>
+          <a href="/track" class="lang en nav-track">Track Order</a>
         </nav>
         <div class="lang-switch">
           <button type="button" data-lang="zh" class="lang-btn active">中</button>
@@ -214,28 +318,76 @@
             </p>
           </div>
 
-          <div class="menu-filters">
-            <button class="filter-btn active" data-filter="all">
-              <span class="lang zh">全部</span>
-              <span class="lang en">All</span>
+          <!-- Top-level tabs: this week / next week / all -->
+          <div class="menu-tabs" role="tablist">
+            <button type="button" class="menu-tab active" data-menu-tab="this-week" role="tab">
+              <span class="tab-pill">限定</span>
+              <span class="lang zh">本周菜单</span>
+              <span class="lang en">This Week</span>
             </button>
-            <button class="filter-btn" data-filter="pork">
-              <span class="lang zh">猪肉</span>
-              <span class="lang en">Pork</span>
+            <button type="button" class="menu-tab" data-menu-tab="next-week" role="tab">
+              <span class="tab-pill upcoming">预告</span>
+              <span class="lang zh">下周菜单</span>
+              <span class="lang en">Next Week</span>
             </button>
-            <button class="filter-btn" data-filter="beef">
-              <span class="lang zh">牛肉</span>
-              <span class="lang en">Beef</span>
-            </button>
-            <button class="filter-btn" data-filter="chicken">
-              <span class="lang zh">鸡肉</span>
-              <span class="lang en">Chicken</span>
-            </button>
-            <button class="filter-btn" data-filter="veg">
-              <span class="lang zh">素食</span>
-              <span class="lang en">Vegetarian</span>
+            <button type="button" class="menu-tab" data-menu-tab="all" role="tab">
+              <span class="lang zh">全部口味</span>
+              <span class="lang en">All Flavours</span>
             </button>
           </div>
+
+          <!-- Panel: This Week (JSON-driven, sellable) -->
+          <div class="menu-panel" data-panel="this-week">
+            <div class="panel-banner">
+              <span class="banner-stamp">每周</span>
+              <p class="lang zh">每周精选 <strong>4 款</strong> 上架,每口味每日上限 <strong>40 个</strong>,售完即止。<span data-this-week-delivery class="muted"></span></p>
+              <p class="lang en">We feature <strong>4 flavours</strong> each week, <strong>40 each per day</strong>. Order before 18:00 for next-day delivery. <span data-this-week-delivery-en class="muted"></span></p>
+            </div>
+            <div class="weekly-grid" data-this-week-grid>
+              <div class="weekly-skeleton">载入中… / Loading…</div>
+            </div>
+          </div>
+
+          <!-- Panel: Next Week (preview, not sellable) -->
+          <div class="menu-panel" data-panel="next-week" hidden>
+            <div class="panel-banner subtle">
+              <span class="banner-stamp upcoming">预告</span>
+              <p class="lang zh">下周才上架。先看看,不能下单。</p>
+              <p class="lang en">Coming next week — preview only.</p>
+            </div>
+            <div class="weekly-grid preview" data-next-week-grid>
+              <div class="weekly-skeleton">载入中… / Loading…</div>
+            </div>
+          </div>
+
+          <!-- Panel: All flavours (existing static grid + filters) -->
+          <div class="menu-panel" data-panel="all" hidden>
+            <p class="all-hint">
+              <span class="lang zh">这是我们做过的全部口味,每周从中精选 4 款上架;非本周菜品如需大批量定制请联系我们。</span>
+              <span class="lang en">Everything we make. Each week we feature 4 from the list. For custom bulk orders of off-week items, please contact us.</span>
+            </p>
+            <div class="menu-filters">
+              <button class="filter-btn active" data-filter="all">
+                <span class="lang zh">全部</span>
+                <span class="lang en">All</span>
+              </button>
+              <button class="filter-btn" data-filter="pork">
+                <span class="lang zh">猪肉</span>
+                <span class="lang en">Pork</span>
+              </button>
+              <button class="filter-btn" data-filter="beef">
+                <span class="lang zh">牛肉</span>
+                <span class="lang en">Beef</span>
+              </button>
+              <button class="filter-btn" data-filter="chicken">
+                <span class="lang zh">鸡肉</span>
+                <span class="lang en">Chicken</span>
+              </button>
+              <button class="filter-btn" data-filter="veg">
+                <span class="lang zh">素食</span>
+                <span class="lang en">Vegetarian</span>
+              </button>
+            </div>
 
           <div class="product-grid">
             <!-- Product 1 -->
@@ -1224,6 +1376,90 @@
               </div>
             </article>
 
+            <!-- Product 24 -->
+            <article class="product-card card" data-product="香菇鸡丁酱香味" data-category="chicken">
+              <div class="product-image" data-product-trigger>
+                <img loading="lazy" src="image/product/香菇鸡丁酱香味/1000005856.jpg" alt="香菇鸡丁酱香味包子" />
+                <span class="product-tag new">新品</span>
+              </div>
+              <div class="product-body">
+                <h3 class="lang zh">香菇鸡丁酱香味包子</h3>
+                <h3 class="lang en">Shiitake Chicken Buns (soy-fragrant)</h3>
+                <p class="product-desc lang zh">
+                  鸡腿肉切丁配香菇，加酱香调味料，鲜香不柴、饱满多汁，孩子和大人都爱的一款。
+                </p>
+                <p class="product-desc lang en">
+                  Diced chicken thigh with shiitake mushrooms in a savoury soy-sauce glaze – moist, fragrant, kid-friendly.
+                </p>
+                <div class="product-price">
+                  <span class="price-currency">NZ$</span>
+                  <span class="price-amount">2</span>
+                  <span class="price-unit lang zh">/ 只</span>
+                  <span class="price-unit lang en">/ pc</span>
+                </div>
+                <dl class="sku-list">
+                  <div class="sku-row">
+                    <dt>SKU</dt>
+                    <dd>VYA-BUN-24</dd>
+                  </div>
+                  <div class="sku-row">
+                    <dt class="lang zh">荤 / 素</dt>
+                    <dt class="lang en">Meat / Veg</dt>
+                    <dd class="lang zh">鸡肉</dd>
+                    <dd class="lang en">Chicken</dd>
+                  </div>
+                  <div class="sku-row">
+                    <dt class="lang zh">建议起订</dt>
+                    <dt class="lang en">Minimum order</dt>
+                    <dd class="lang zh">4 只起（自取）；10 只起（配送）</dd>
+                    <dd class="lang en">Min 4 pcs (pickup); 10 pcs (delivery)</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+
+            <!-- Product 25 -->
+            <article class="product-card card" data-product="鸡蛋西葫芦虾皮" data-category="veg">
+              <div class="product-image" data-product-trigger>
+                <img loading="lazy" src="image/product/鸡蛋西葫芦虾皮/1000005855.jpg" alt="鸡蛋西葫芦虾皮包子" />
+                <span class="product-tag new">新品</span>
+              </div>
+              <div class="product-body">
+                <h3 class="lang zh">鸡蛋西葫芦虾皮包子</h3>
+                <h3 class="lang en">Egg, Zucchini &amp; Dried Shrimp Buns</h3>
+                <p class="product-desc lang zh">
+                  西葫芦切丝配嫩鸡蛋与小虾皮，清淡鲜美，带一丝海味鲜咸，适合早餐或轻食。
+                </p>
+                <p class="product-desc lang en">
+                  Shredded zucchini with fluffy egg and dried baby shrimp – light, fresh with a hint of sea umami, great for breakfast.
+                </p>
+                <div class="product-price">
+                  <span class="price-currency">NZ$</span>
+                  <span class="price-amount">2</span>
+                  <span class="price-unit lang zh">/ 只</span>
+                  <span class="price-unit lang en">/ pc</span>
+                </div>
+                <dl class="sku-list">
+                  <div class="sku-row">
+                    <dt>SKU</dt>
+                    <dd>VYA-BUN-25</dd>
+                  </div>
+                  <div class="sku-row">
+                    <dt class="lang zh">荤 / 素</dt>
+                    <dt class="lang en">Meat / Veg</dt>
+                    <dd class="lang zh">鸡蛋 &amp; 虾皮</dd>
+                    <dd class="lang en">Egg &amp; Dried Shrimp</dd>
+                  </div>
+                  <div class="sku-row">
+                    <dt class="lang zh">建议起订</dt>
+                    <dt class="lang en">Minimum order</dt>
+                    <dd class="lang zh">4 只起（自取）；10 只起（配送）</dd>
+                    <dd class="lang en">Min 4 pcs (pickup); 10 pcs (delivery)</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+
             <!-- Product 24: Group & Corporate -->
             <article id="group" class="product-card card">
               <div class="product-image">
@@ -1279,6 +1515,7 @@
             For corporate events or parties, please contact us 2–3 days in advance.
             We can customise a set based on your group size and flavour preference.
           </p>
+          </div><!-- /menu-panel data-panel=all -->
         </div>
       </section>
 
@@ -1566,6 +1803,58 @@
       <span class="floating-btn-text lang en">Contact</span>
     </button>
 
+    <!-- Cart Floating Button -->
+    <button type="button" class="cart-fab" id="cart-fab" aria-label="Cart" data-cart-toggle hidden>
+      <span class="cart-fab-icon">🥟</span>
+      <span class="cart-fab-count" data-cart-count>0</span>
+      <span class="cart-fab-text lang zh">购物车</span>
+      <span class="cart-fab-text lang en">Cart</span>
+    </button>
+
+    <!-- Cart Drawer -->
+    <aside class="cart-drawer" id="cart-drawer" hidden aria-hidden="true">
+      <div class="cart-overlay" data-cart-close></div>
+      <div class="cart-panel" role="dialog" aria-label="购物车 / Cart">
+        <header class="cart-head">
+          <h3>
+            <span class="lang zh">购物车</span>
+            <span class="lang en">Your Cart</span>
+          </h3>
+          <button type="button" class="cart-close-btn" data-cart-close aria-label="Close">×</button>
+        </header>
+        <div class="cart-meta" data-cart-meta>
+          <span class="lang zh">送达日:<strong data-cart-delivery-zh>—</strong></span>
+          <span class="lang en">Delivery:<strong data-cart-delivery-en>—</strong></span>
+        </div>
+        <div class="cart-body" data-cart-body>
+          <p class="cart-empty">
+            <span class="lang zh">购物车空空的,先选两笼包子吧 🥟</span>
+            <span class="lang en">Cart is empty. Pick a few flavours first 🥟</span>
+          </p>
+        </div>
+        <footer class="cart-foot">
+          <div class="cart-totals">
+            <div class="cart-line">
+              <span class="lang zh">数量</span><span class="lang en">Total qty</span>
+              <strong data-cart-total-qty>0</strong>
+            </div>
+            <div class="cart-line cart-line-total">
+              <span class="lang zh">合计</span><span class="lang en">Total</span>
+              <strong>NZ$ <span data-cart-total-price>0.00</span></strong>
+            </div>
+          </div>
+          <button type="button" class="btn primary cart-checkout" data-cart-checkout disabled>
+            <span class="lang zh">去结算 →</span>
+            <span class="lang en">Checkout →</span>
+          </button>
+          <p class="cart-hint">
+            <span class="lang zh">下一步会让你填送货地址、看起送量、并完成在线支付。</span>
+            <span class="lang en">Next: enter your address, see the minimum order, and pay online.</span>
+          </p>
+        </footer>
+      </div>
+    </aside>
+
     <!-- Food Safety & Compliance (Footer) -->
     <section id="compliance" class="compliance-footer">
       <div class="container">
@@ -1611,11 +1900,15 @@
               <li>猪肉韭菜虾仁：含甲壳类（虾）。</li>
               <li>韭菜鸡蛋：含鸡蛋。</li>
               <li>西葫芦鸡蛋：含鸡蛋。</li>
+              <li>鸡蛋西葫芦虾皮：含鸡蛋、甲壳类（虾皮）。</li>
+              <li>香菇鸡丁酱香味：含大豆（酱料），无虾蟹蛋。</li>
             </ul>
             <ul class="lang en" style="font-size: 12px; color: #9ca3af; margin-top: 4px; padding-left: 1.2rem;">
               <li>Pork, chive &amp; shrimp: contains crustaceans (shrimp).</li>
               <li>Chive &amp; egg: contains eggs.</li>
               <li>Zucchini &amp; egg: contains eggs.</li>
+              <li>Egg, zucchini &amp; dried shrimp: contains eggs &amp; crustaceans (dried shrimp).</li>
+              <li>Shiitake chicken: contains soy (sauce); no egg / shellfish.</li>
             </ul>
 
             <p class="lang zh" style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
@@ -1865,18 +2158,56 @@
     <script>
       (function () {
         const buttons = document.querySelectorAll(".lang-btn");
+        const LANG_KEY = "vya_lang";
         function setLang(lang) {
           document.body.classList.remove("lang-zh", "lang-en");
           document.body.classList.add("lang-" + lang);
+          document.documentElement.setAttribute(
+            "lang",
+            lang === "zh" ? "zh-CN" : "en"
+          );
           buttons.forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.lang === lang);
           });
+          try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+          // Tell any live JS-rendered sections to re-render
+          window.dispatchEvent(new CustomEvent("vya:langchange", { detail: lang }));
         }
         buttons.forEach((btn) => {
           btn.addEventListener("click", () => setLang(btn.dataset.lang));
         });
-        // default to Chinese
-        setLang("zh");
+        // Restore last choice, else default to zh
+        const saved = localStorage.getItem(LANG_KEY);
+        setLang(saved === "en" ? "en" : "zh");
+      })();
+
+      // Scroll-reveal — staggered fade/rise as sections enter viewport
+      (function () {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          return;
+        }
+        if (!("IntersectionObserver" in window)) return;
+        const targets = document.querySelectorAll(
+          ".about-inner, .order-inner, .location-inner, .contact-inner, " +
+            ".section-header, .product-card, .gallery-item, .compliance-card, " +
+            ".license-badge, .delivery-card, .legal-section"
+        );
+        targets.forEach((el) => el.classList.add("reveal"));
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        );
+        targets.forEach((el) => io.observe(el));
       })();
 
       (function () {
@@ -2042,6 +2373,12 @@
           ],
           香辣雪菜肉沫: [
             "image/product/香辣雪菜肉沫/香辣雪菜肉沫.jpg"
+          ],
+          香菇鸡丁酱香味: [
+            "image/product/香菇鸡丁酱香味/1000005856.jpg"
+          ],
+          鸡蛋西葫芦虾皮: [
+            "image/product/鸡蛋西葫芦虾皮/1000005855.jpg"
           ]
         };
 
@@ -2220,6 +2557,354 @@
               cateringCard.style.display = filter === "all" ? "" : "none";
             }
           });
+        });
+      })();
+
+      // ======================================================
+      // Menu tabs + weekly fetch + cart  (P2a)
+      // ======================================================
+      (function () {
+        const CART_KEY = "vya_cart_v1";
+        const $tabs = document.querySelectorAll(".menu-tab");
+        const $panels = document.querySelectorAll(".menu-panel");
+        const $thisGrid = document.querySelector("[data-this-week-grid]");
+        const $nextGrid = document.querySelector("[data-next-week-grid]");
+        const $deliveryZh = document.querySelector("[data-this-week-delivery]");
+        const $deliveryEn = document.querySelector("[data-this-week-delivery-en]");
+        const $cartFab   = document.getElementById("cart-fab");
+        const $cartCount = document.querySelector("[data-cart-count]");
+        const $drawer    = document.getElementById("cart-drawer");
+        const $cartBody  = document.querySelector("[data-cart-body]");
+        const $cartTotalQty = document.querySelector("[data-cart-total-qty]");
+        const $cartTotalPrice = document.querySelector("[data-cart-total-price]");
+        const $cartCheckout = document.querySelector("[data-cart-checkout]");
+        const $cartDelvZh = document.querySelector("[data-cart-delivery-zh]");
+        const $cartDelvEn = document.querySelector("[data-cart-delivery-en]");
+
+        let thisWeekData = null; // { delivery_date, delivery_label_zh/en, items[] }
+
+        // ---------- i18n helper for JS-rendered strings ----------
+        function isZh() { return document.body.classList.contains("lang-zh"); }
+        function t(zh, en) { return isZh() ? zh : en; }
+
+        // GA4 helper — converts an item to the standard ecommerce shape
+        function gaItem(it, qty) {
+          return {
+            item_id: it.sku || ("id_" + it.id),
+            item_name: it.name_zh,
+            item_category: it.category || "",
+            price: (it.price_cents || 0) / 100,
+            quantity: qty || 1,
+          };
+        }
+        function gaCartItems(cart) {
+          return Object.values(cart).map(x => gaItem(x, x.qty));
+        }
+        function gaCartValue(cart) {
+          return Object.values(cart).reduce(
+            (s, x) => s + (x.price_cents * x.qty) / 100, 0,
+          );
+        }
+
+        // --- DEV debug: verify all required elements are present ---
+        console.log("[vya] P2a init. element check:", {
+          $tabs: $tabs.length,
+          $panels: $panels.length,
+          $thisGrid: !!$thisGrid,
+          $nextGrid: !!$nextGrid,
+          $cartFab: !!$cartFab,
+          $cartCount: !!$cartCount,
+          $drawer: !!$drawer,
+          $cartBody: !!$cartBody,
+          $cartTotalQty: !!$cartTotalQty,
+          $cartTotalPrice: !!$cartTotalPrice,
+          $cartCheckout: !!$cartCheckout,
+        });
+        const _missing = Object.entries({
+          $thisGrid, $nextGrid, $cartFab, $cartCount, $drawer,
+          $cartBody, $cartTotalQty, $cartTotalPrice, $cartCheckout,
+        }).filter(([, v]) => !v).map(([k]) => k);
+        if (_missing.length) {
+          console.error("[vya] MISSING DOM elements:", _missing);
+        }
+
+        // ---------- cart state in localStorage ----------
+        function loadCart() {
+          try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; }
+          catch (e) { return {}; }
+        }
+        function saveCart(cart) {
+          localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        }
+        function cartTotalQty(cart) {
+          return Object.values(cart).reduce((s, x) => s + (x.qty || 0), 0);
+        }
+        function cartTotalCents(cart) {
+          return Object.values(cart).reduce(
+            (s, x) => s + (x.price_cents || 0) * (x.qty || 0), 0,
+          );
+        }
+
+        // ---------- render top-level cart fab + drawer ----------
+        function renderCart() {
+          const cart = loadCart();
+          const qty = cartTotalQty(cart);
+          $cartCount.textContent = qty;
+          $cartFab.hidden = qty === 0;
+          $cartTotalQty.textContent = qty;
+          $cartTotalPrice.textContent = (cartTotalCents(cart) / 100).toFixed(2);
+          $cartCheckout.disabled = qty === 0;
+          if (thisWeekData) {
+            $cartDelvZh.textContent = thisWeekData.delivery_label_zh;
+            $cartDelvEn.textContent = thisWeekData.delivery_label_en;
+          }
+          // body
+          const ids = Object.keys(cart);
+          if (ids.length === 0) {
+            $cartBody.innerHTML =
+              '<p class="cart-empty">' +
+              '<span class="lang zh">购物车空空的,先选两笼包子吧 🥟</span>' +
+              '<span class="lang en">Cart is empty. Pick a few flavours first 🥟</span>' +
+              '</p>';
+            return;
+          }
+          $cartBody.innerHTML = ids.map(id => {
+            const it = cart[id];
+            const lineCents = it.price_cents * it.qty;
+            return `
+              <div class="cart-item" data-cart-row="${id}">
+                <img src="/${it.image}" alt="">
+                <div>
+                  <div class="ci-name">${isZh() ? it.name_zh : it.name_en}</div>
+                  <div class="ci-meta">${isZh() ? it.name_en : it.name_zh} · NZ$ ${(it.price_cents/100).toFixed(2)} × ${it.qty}
+                    = <strong>NZ$ ${(lineCents/100).toFixed(2)}</strong></div>
+                </div>
+                <div class="ci-controls">
+                  <div class="qty-stepper">
+                    <button type="button" data-cart-dec="${id}" aria-label="decrease">−</button>
+                    <input type="number" min="0" value="${it.qty}" data-cart-qty="${id}">
+                    <button type="button" data-cart-inc="${id}" aria-label="increase">+</button>
+                  </div>
+                  <button type="button" class="ci-remove" data-cart-remove="${id}">${t("删除", "Remove")}</button>
+                </div>
+              </div>`;
+          }).join("");
+          // also re-render this-week grid so steppers show current qty
+          renderThisWeek();
+        }
+
+        // ---------- tabs ----------
+        function activateTab(name) {
+          $tabs.forEach(t => t.classList.toggle("active", t.dataset.menuTab === name));
+          $panels.forEach(p => p.hidden = p.dataset.panel !== name);
+        }
+        $tabs.forEach(t => {
+          t.addEventListener("click", () => activateTab(t.dataset.menuTab));
+        });
+
+        // ---------- this-week render ----------
+        function renderThisWeek() {
+          if (!thisWeekData) return;
+          const cart = loadCart();
+          const items = thisWeekData.items || [];
+          if (items.length === 0) {
+            $thisGrid.innerHTML =
+              '<p class="weekly-skeleton">本周菜单尚未发布,请稍后再来。<br>'
+              + 'This week\'s menu has not been published yet — please check back soon.</p>';
+            return;
+          }
+          $thisGrid.innerHTML = items.map(it => {
+            const inCart = cart[it.id]?.qty || 0;
+            const stockLevel = it.remaining === 0 ? "out"
+                              : it.remaining <= 10 ? "low" : "";
+            const stockLabel = it.remaining === 0
+              ? t("已售罄", "Sold out")
+              : t(`余 ${it.remaining}`, `${it.remaining} left`);
+            return `
+              <article class="weekly-card" data-id="${it.id}">
+                <div class="wc-image">
+                  <img src="/${it.image}" alt="${it.name_zh}" loading="lazy">
+                  <span class="wc-pos">#${it.position}</span>
+                  <span class="wc-stock ${stockLevel}">${stockLabel}</span>
+                </div>
+                <div class="wc-body">
+                  <h3>${isZh() ? it.name_zh : it.name_en}</h3>
+                  <p class="wc-name-en">${isZh() ? it.name_en : it.name_zh}</p>
+                  <p class="wc-desc">${isZh() ? (it.desc_zh || it.desc_en || "") : (it.desc_en || it.desc_zh || "")}</p>
+                  <div class="wc-price">NZ$ ${(it.price_cents/100).toFixed(2)}<small> ${t("/ 只", "/ pc")}</small></div>
+                  <div class="wc-buy">
+                    <div class="qty-stepper">
+                      <button type="button" data-dec="${it.id}" aria-label="-">−</button>
+                      <input type="number" min="0" max="${it.remaining}"
+                             value="${inCart}" data-qty="${it.id}">
+                      <button type="button" data-inc="${it.id}" aria-label="+">+</button>
+                    </div>
+                    <button type="button" class="btn-add ${inCart ? 'in-cart' : ''}"
+                            data-add="${it.id}" ${it.remaining === 0 ? 'disabled' : ''}>
+                      ${inCart > 0
+                        ? t(`已加 ${inCart}`, `In cart (${inCart})`)
+                        : t("加入购物车", "Add to cart")}
+                    </button>
+                  </div>
+                </div>
+              </article>`;
+          }).join("");
+        }
+
+        // ---------- next-week render ----------
+        function renderNextWeek(payload) {
+          const items = payload.items || [];
+          if (items.length === 0) {
+            $nextGrid.innerHTML = `<p class="weekly-skeleton">${
+              t("下周菜单尚未公布,敬请期待。",
+                "Next week's menu hasn't been announced yet.")
+            }</p>`;
+            return;
+          }
+          $nextGrid.innerHTML = items.map(it => `
+            <article class="weekly-card">
+              <div class="wc-image">
+                <img src="/${it.image}" alt="${it.name_zh}" loading="lazy">
+                <span class="wc-pos">#${it.position}</span>
+              </div>
+              <div class="wc-body">
+                <h3>${isZh() ? it.name_zh : it.name_en}</h3>
+                <p class="wc-name-en">${isZh() ? it.name_en : it.name_zh}</p>
+                <p class="wc-desc">${isZh() ? (it.desc_zh || it.desc_en || "") : (it.desc_en || it.desc_zh || "")}</p>
+                <p class="wc-soon">${t("敬请期待", "Coming soon")}</p>
+              </div>
+            </article>`).join("");
+        }
+
+        // ---------- cart helpers ----------
+        function findThisWeekItem(id) {
+          return (thisWeekData?.items || []).find(x => String(x.id) === String(id));
+        }
+        function setQty(id, qty) {
+          const it = findThisWeekItem(id);
+          if (!it) return;
+          qty = Math.max(0, Math.min(qty, it.remaining));
+          const cart = loadCart();
+          const prev = cart[id]?.qty || 0;
+          if (qty === 0) delete cart[id];
+          else cart[id] = {
+            id: it.id, sku: it.sku, category: it.category,
+            name_zh: it.name_zh, name_en: it.name_en,
+            price_cents: it.price_cents,
+            image: it.image, qty,
+          };
+          saveCart(cart);
+          // GA4: add_to_cart vs remove_from_cart based on delta
+          const delta = qty - prev;
+          if (delta > 0) {
+            window.vyaTrack && window.vyaTrack("add_to_cart", {
+              currency: "NZD",
+              value: (it.price_cents * delta) / 100,
+              items: [gaItem(it, delta)],
+            });
+          } else if (delta < 0) {
+            window.vyaTrack && window.vyaTrack("remove_from_cart", {
+              currency: "NZD",
+              value: (it.price_cents * -delta) / 100,
+              items: [gaItem(it, -delta)],
+            });
+          }
+          renderCart();
+        }
+        function addOne(id) {
+          const cart = loadCart();
+          const cur = cart[id]?.qty || 0;
+          setQty(id, cur + 1);
+        }
+
+        // ---------- delegated event handlers ----------
+        console.log("[vya] registering click handler");
+        document.addEventListener("click", e => {
+          const t = e.target.closest("[data-add],[data-inc],[data-dec],"
+                                  + "[data-cart-inc],[data-cart-dec],[data-cart-remove],"
+                                  + "[data-cart-toggle],[data-cart-close],[data-cart-checkout]");
+          // DEV: surface every click with its target + resolved match
+          console.log("[vya] click", {
+            tag: e.target.tagName,
+            cls: e.target.className,
+            matched: t ? t.tagName + "." + t.className + " data=" + JSON.stringify(t.dataset) : null,
+          });
+          if (!t) return;
+          if (t.dataset.add) { addOne(t.dataset.add); return; }
+          if (t.dataset.inc) { addOne(t.dataset.inc); return; }
+          if (t.dataset.dec) {
+            const cart = loadCart();
+            setQty(t.dataset.dec, (cart[t.dataset.dec]?.qty || 0) - 1);
+            return;
+          }
+          if (t.dataset.cartInc)   { addOne(t.dataset.cartInc); return; }
+          if (t.dataset.cartDec)   {
+            const cart = loadCart();
+            setQty(t.dataset.cartDec, (cart[t.dataset.cartDec]?.qty || 0) - 1);
+            return;
+          }
+          if (t.dataset.cartRemove){ setQty(t.dataset.cartRemove, 0); return; }
+          if (t.hasAttribute("data-cart-toggle"))   { openCart(); return; }
+          if (t.hasAttribute("data-cart-close"))    { closeCart(); return; }
+          if (t.hasAttribute("data-cart-checkout")) {
+            location.href = "/checkout";
+            return;
+          }
+        });
+        document.addEventListener("input", e => {
+          const t = e.target;
+          if (t.matches("[data-qty]"))      setQty(t.dataset.qty, parseInt(t.value, 10) || 0);
+          if (t.matches("[data-cart-qty]")) setQty(t.dataset.cartQty, parseInt(t.value, 10) || 0);
+        });
+
+        function openCart() {
+          $drawer.hidden = false;
+          $drawer.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          const c = loadCart();
+          window.vyaTrack && window.vyaTrack("view_cart", {
+            currency: "NZD", value: gaCartValue(c), items: gaCartItems(c),
+          });
+        }
+        function closeCart() {
+          $drawer.hidden = true;
+          $drawer.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        document.addEventListener("keydown", e => {
+          if (e.key === "Escape" && !$drawer.hidden) closeCart();
+        });
+
+        // ---------- bootstrap ----------
+        Promise.all([
+          fetch("/api/menu/this-week").then(r => r.json()),
+          fetch("/api/menu/next-week").then(r => r.json()),
+        ]).then(([tw, nw]) => {
+          thisWeekData = tw;
+          // delivery hint inside the panel banner — both lang spans get filled
+          if ($deliveryZh) $deliveryZh.textContent = `送达日:${tw.delivery_label_zh}`;
+          if ($deliveryEn) $deliveryEn.textContent = `Delivery: ${tw.delivery_label_en}`;
+          // Re-render whenever language switches (so weekly cards swap zh/en)
+          window.addEventListener("vya:langchange", () => {
+            renderThisWeek();
+            renderNextWeek(nw);
+            renderCart();
+          });
+          renderThisWeek();
+          renderNextWeek(nw);
+          renderCart();
+          // GA4: list-view event for the 4 cards a customer can buy
+          window.vyaTrack && window.vyaTrack("view_item_list", {
+            item_list_id: "this_week",
+            item_list_name: "本周菜单 / This Week",
+            items: (tw.items || []).map(i => gaItem(i, 1)),
+          });
+        }).catch(err => {
+          console.error("Menu fetch failed", err);
+          $thisGrid.innerHTML = `<p class="weekly-skeleton">${
+            t("菜单加载失败,请刷新页面重试。",
+              "Failed to load menu — please refresh.")
+          }</p>`;
         });
       })();
 

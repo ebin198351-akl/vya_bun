@@ -13,6 +13,17 @@ ENV/
 .env
 .env.local
 
+# SQLite DB — contains real customer data; never commit
+data/
+*.db
+*.sqlite
+*.sqlite3
+server.pid
+
+# node_modules + esbuild build artefacts
+node_modules/
+static/dist/
+
 # Distribution
 dist/
 build/

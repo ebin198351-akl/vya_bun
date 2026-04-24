@@ -1,0 +1,39 @@
+{% extends "admin/_layout.html" %}
+{% block title %}菜单管理{% endblock %}
+{% block content %}
+<h1 class="page-title">菜单管理</h1>
+<p class="hint">改价、改每日上限、上下架。共 {{ items|length }} 个 SKU。</p>
+
+<form method="post" class="menu-form">
+  <div class="menu-grid">
+    {% for it in items %}
+      <div class="menu-row {{ '' if it.active else 'inactive' }}">
+        <img src="/{{ it.image }}" alt="" class="menu-thumb">
+        <div class="menu-meta">
+          <div class="menu-name">{{ it.name_zh }}</div>
+          <div class="menu-name-en">{{ it.name_en }}</div>
+          <div class="menu-sku">{{ it.sku }} · {{ it.category }} · {{ it.meat_zh }}</div>
+        </div>
+        <label class="menu-field">
+          <span>价格 (NZ$)</span>
+          <input type="number" step="0.50" min="0" name="price_{{ it.id }}"
+                 value="{{ '%.2f' % (it.price_cents / 100) }}">
+        </label>
+        <label class="menu-field">
+          <span>每日上限</span>
+          <input type="number" min="0" name="cap_{{ it.id }}"
+                 value="{{ it.daily_cap }}">
+        </label>
+        <label class="menu-toggle">
+          <input type="checkbox" name="active_{{ it.id }}" value="1"
+                 {% if it.active %}checked{% endif %}>
+          <span>上架</span>
+        </label>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="menu-actions">
+    <button type="submit" class="btn-primary">保存全部</button>
+  </div>
+</form>
+{% endblock %}
