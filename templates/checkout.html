@@ -20,16 +20,8 @@
     };
   </script>
   <link rel="stylesheet" href="/styles.css">
-  {% if maps_enabled and google_maps_key %}
-  <script>
-    window.__gmapsReady = false;
-    function __gmapsInit() {
-      window.__gmapsReady = true;
-      window.dispatchEvent(new Event("gmapsready"));
-    }
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=__gmapsInit&loading=async" async defer></script>
-  {% endif %}
+  {# Legacy google.maps.places.Autocomplete is blocked for GCP projects
+     created after March 2025. Server-side Distance Matrix still works. #}
   <style>
     /* Page-local checkout styles */
     .co-page { background: var(--paper); min-height: 100vh; padding: 80px 0 60px; }
@@ -266,12 +258,10 @@
                      data-form-type="other"
                      data-bwignore
                      placeholder="e.g. 12 Smith Street, Takapuna, Auckland 0622">
-              {% if maps_enabled %}
               <p class="addr-hint">
-                <span class="lang zh">开始输入即可从下拉列表选地址(更准)</span>
-                <span class="lang en">Start typing and pick from the dropdown for best accuracy</span>
+                <span class="lang zh">输入完整地址(含门牌和邮编最准),我们会自动算距离</span>
+                <span class="lang en">Enter full address incl. number &amp; postcode for the most accurate distance</span>
               </p>
-              {% endif %}
             </div>
             <div class="region-picker" id="region-picker">
               <span style="font-size:13px; color:var(--soy); width:100%;">
@@ -572,13 +562,7 @@
           );
           currentQuote = null; updateSubmit(); return;
         }
-        if (!MAPS_ENABLED) {
-          // skip auto-quote, force region pick
-          $regionPicker.classList.add("show");
-          $quote.className = "quote-box warn";
-          $quote.innerHTML = `<div class="q-line">⚠ ${t("自动距离计算未启用,请选区域。", "Auto distance is disabled — please pick a region.")}</div>`;
-          currentQuote = null; updateSubmit(); return;
-        }
+        // Debounce server-side Distance Matrix lookup
         quoteTimer = setTimeout(() => fetchQuote({address: v}), 600);
       });
 
@@ -586,40 +570,12 @@
         if (r.checked) fetchQuote({region: r.value});
       }));
 
-      // ----- Google Places Autocomplete (if enabled) -----
-      function setupAutocomplete() {
-        if (!window.google || !google.maps || !google.maps.places) return;
-        try {
-          const ac = new google.maps.places.Autocomplete($addr, {
-            componentRestrictions: { country: "nz" },
-            fields: ["formatted_address", "geometry", "name"],
-            types: ["address"],
-            // Bias to the kitchen area (Auckland North Shore)
-            bounds: new google.maps.LatLngBounds(
-              new google.maps.LatLng(-37.10, 174.55),
-              new google.maps.LatLng(-36.55, 175.00),
-            ),
-            strictBounds: false,
-          });
-          ac.addListener("place_changed", () => {
-            const place = ac.getPlace();
-            if (place && place.formatted_address) {
-              $addr.value = place.formatted_address;
-              clearTimeout(quoteTimer);
-              fetchQuote({ address: place.formatted_address });
-            }
-          });
-          // Prevent form submit when user hits Enter in autocomplete
-          $addr.addEventListener("keydown", e => {
-            if (e.key === "Enter") e.preventDefault();
-          });
-          console.log("[vya] Places Autocomplete ready");
-        } catch (e) {
-          console.error("[vya] Autocomplete setup failed", e);
-        }
-      }
-      if (window.__gmapsReady) setupAutocomplete();
-      else window.addEventListener("gmapsready", setupAutocomplete);
+      // Places Autocomplete (legacy) is blocked for new GCP projects.
+      // Distance Matrix runs server-side on whatever text the user types,
+      // so the full experience still works — just without a dropdown.
+      $addr.addEventListener("keydown", e => {
+        if (e.key === "Enter") e.preventDefault();
+      });
 
       // re-render summary if cart changed in another tab
       window.addEventListener("storage", e => {
