@@ -15,7 +15,14 @@ from email.mime.multipart import MIMEMultipart
 from typing import Optional
 
 
-KITCHEN_EMAIL = os.getenv("ORDER_NOTIFY_EMAIL", "yawen4092@gmail.com")
+# Kitchen email recipients — supports either ORDER_NOTIFY_EMAILS (plural,
+# comma-separated, preferred) or legacy ORDER_NOTIFY_EMAIL (single).
+def _kitchen_emails() -> list:
+    raw = os.getenv("ORDER_NOTIFY_EMAILS") or os.getenv("ORDER_NOTIFY_EMAIL", "")
+    return [a.strip() for a in raw.split(",") if a.strip()]
+
+
+KITCHEN_PHONE = os.getenv("KITCHEN_PHONE", "").strip()
 GMAIL_USER = os.getenv("GMAIL_USER", "")
 GMAIL_PASS = os.getenv("GMAIL_APP_PASSWORD", "").replace(" ", "")
 WECHAT = "ya312322063"
@@ -180,12 +187,19 @@ def email_customer(order: dict, items: list, event: str,
 
 def email_kitchen(order: dict, items: list, event: str,
                   reason: Optional[str] = None) -> bool:
+    """Sends to every address in ORDER_NOTIFY_EMAILS. Returns True if at
+    least one recipient succeeded."""
+    recipients = _kitchen_emails()
+    if not recipients:
+        print("[notify] no kitchen emails configured")
+        return False
     label = {
         "received":  "新预约待审核",
         "confirmed": "订单已确认(由你)",
         "rejected":  "订单已拒绝(由你)",
     }.get(event, event)
     items_block = _items_block(items)
+    admin_link = f"{PUBLIC_BASE}/admin/orders/{order['id']}"
     subject = (
         f"【{label}】#{order['id']} – {order['customer_name']} – "
         f"NZ$ {order['total_cents']/100:.2f}"
@@ -207,11 +221,35 @@ def email_kitchen(order: dict, items: list, event: str,
         body += (
             f"\n=== 操作 ===\n"
             f"请到后台审核 → 确认或拒绝:\n"
-            f"  /admin/orders/{order['id']}\n"
+            f"  {admin_link}\n"
         )
     if reason:
         body += f"\n拒绝原因(已发给客户):\n{reason}\n"
-    return _smtp_send(KITCHEN_EMAIL, subject, body)
+
+    any_ok = False
+    for to in recipients:
+        if _smtp_send(to, subject, body):
+            any_ok = True
+    return any_ok
+
+
+def sms_kitchen_new_order(order: dict, items: list) -> bool:
+    """Heads-up SMS to KITCHEN_PHONE when a new reservation arrives.
+
+    Only fired on `received` event (kitchen already knows about confirms /
+    rejects since they triggered them). Kept short — single segment ideal.
+    """
+    if not KITCHEN_PHONE:
+        return False
+    qty = sum(int(i.get("quantity", 0)) for i in items)
+    body = (
+        f"【薇雅厨房】新预约 #{order['id']}: "
+        f"{order['customer_name']} {order['phone']} "
+        f"{qty} 个 NZ$ {order['total_cents']/100:.2f} "
+        f"送达 {order['delivery_date']} "
+        f"审核 {PUBLIC_BASE}/admin/orders/{order['id']}"
+    )
+    return _send_sms(KITCHEN_PHONE, body)
 
 
 # ---------- SMS ----------
@@ -297,6 +335,11 @@ def notify_event(order: dict, items: list, event: str,
     if to_kitchen:
         try: email_kitchen(order, items, event, reason)
         except Exception as e: print(f"[notify] email_kitchen failed: {e}")
+        # SMS the kitchen ONLY for new reservations — for confirmed / rejected
+        # the admin triggered the change themselves and doesn't need a buzz.
+        if event == "received":
+            try: sms_kitchen_new_order(order, items)
+            except Exception as e: print(f"[notify] sms_kitchen failed: {e}")
     if to_customer:
         try: email_customer(order, items, event, reason, admin_note)
         except Exception as e: print(f"[notify] email_customer failed: {e}")
