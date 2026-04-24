@@ -20,6 +20,14 @@ DOMAIN="vya.co.nz"
 WWW_DOMAIN="www.vya.co.nz"
 ADMIN_EMAIL="ebin198351@gmail.com"
 
+# Topology: when AWS ALB / CloudFront sits in front and terminates SSL,
+# we don't need nginx on the box — Flask binds 80 directly with
+# CAP_NET_BIND_SERVICE. Set NO_NGINX=1 to enable that mode.
+#   bash deploy/setup.sh           # nginx + Flask 8000  (default)
+#   NO_NGINX=1 bash deploy/setup.sh # Flask directly on 80, no nginx
+NO_NGINX="${NO_NGINX:-0}"
+APP_PORT=$([ "$NO_NGINX" = "1" ] && echo 80 || echo 8000)
+
 echo "===== 0. Sanity ====="
 if [ "$RUN_USER" = "root" ]; then
   echo "✗ Do not run as root. Login as ec2-user (or your own non-root user) and re-run."
@@ -31,16 +39,25 @@ fi
 echo "  user:     $RUN_USER"
 echo "  repo:     $REPO_DIR"
 echo "  service:  $SVC_NAME"
+echo "  topology: $([ "$NO_NGINX" = "1" ] && echo 'Flask directly on 80 (no nginx)' || echo 'nginx 80 → Flask 8000')"
+echo "  port:     $APP_PORT"
 
 echo "===== 1. System packages ====="
-sudo dnf install -y nginx python3-pip git certbot python3-certbot-nginx >/dev/null
-echo "  ✓ nginx, python3-pip, git, certbot installed"
+if [ "$NO_NGINX" = "1" ]; then
+  sudo dnf install -y python3-pip git >/dev/null
+  echo "  ✓ python3-pip, git installed (nginx skipped)"
+else
+  sudo dnf install -y nginx python3-pip git certbot python3-certbot-nginx >/dev/null
+  echo "  ✓ nginx, python3-pip, git, certbot installed"
+fi
 
-echo "===== 2. Python deps (user-level) ====="
+echo "===== 2. Python deps (system-level via sudo) ====="
 cd "$REPO_DIR"
-python3 -m pip install --user --quiet --upgrade pip
-python3 -m pip install --user --quiet -r requirements.txt
-echo "  ✓ requirements.txt installed for $RUN_USER"
+sudo python3 -m pip install --quiet --upgrade pip
+sudo python3 -m pip install --quiet -r requirements.txt
+python3 -c "import flask, stripe, twilio, googlemaps, dotenv" \
+  && echo "  ✓ all deps importable" \
+  || { echo "✗ pip install failed"; exit 1; }
 
 echo "===== 3. .env scaffold ====="
 if [ ! -f "$REPO_DIR/.env" ]; then
@@ -65,6 +82,18 @@ else
 fi
 
 echo "===== 5. systemd service (generated for this path/user) ====="
+# Ensure .env's PORT matches APP_PORT (might have been left at default)
+if [ -f "$REPO_DIR/.env" ]; then
+  sudo sed -i "s/^PORT=.*/PORT=$APP_PORT/" "$REPO_DIR/.env" 2>/dev/null \
+    || true
+fi
+
+# Capability lines only needed when binding privileged port (<1024)
+CAP_LINES=""
+if [ "$APP_PORT" -lt 1024 ]; then
+  CAP_LINES=$'AmbientCapabilities=CAP_NET_BIND_SERVICE\nCapabilityBoundingSet=CAP_NET_BIND_SERVICE'
+fi
+
 SVC_FILE="/etc/systemd/system/$SVC_NAME.service"
 sudo tee "$SVC_FILE" > /dev/null <<EOF
 [Unit]
@@ -77,6 +106,7 @@ User=$RUN_USER
 Group=$RUN_USER
 WorkingDirectory=$REPO_DIR
 EnvironmentFile=$REPO_DIR/.env
+Environment=PORT=$APP_PORT
 ExecStart=/usr/bin/python3 $REPO_DIR/server.py
 Restart=on-failure
 RestartSec=3
@@ -84,6 +114,7 @@ StandardOutput=append:$REPO_DIR/server.log
 StandardError=append:$REPO_DIR/server.log
 NoNewPrivileges=true
 PrivateTmp=true
+$CAP_LINES
 
 [Install]
 WantedBy=multi-user.target
@@ -101,15 +132,22 @@ else
 fi
 
 echo "===== 6. nginx ====="
-if [ -f /etc/nginx/conf.d/default.conf ]; then
-  sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.disabled
+if [ "$NO_NGINX" = "1" ]; then
+  # Make sure nginx (if previously installed) doesn't squat on 80
+  sudo systemctl stop nginx 2>/dev/null || true
+  sudo systemctl disable nginx 2>/dev/null || true
+  echo "  ✓ NO_NGINX=1 — Flask owns port 80 directly (AWS handles SSL upstream)"
+else
+  if [ -f /etc/nginx/conf.d/default.conf ]; then
+    sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.disabled
+  fi
+  sudo cp "$REPO_DIR/deploy/nginx.conf" /etc/nginx/conf.d/vya.conf
+  sudo mkdir -p /var/www/certbot
+  sudo nginx -t
+  sudo systemctl enable --now nginx
+  sudo systemctl reload nginx
+  echo "  ✓ nginx reloaded; HTTP listening on 80"
 fi
-sudo cp "$REPO_DIR/deploy/nginx.conf" /etc/nginx/conf.d/vya.conf
-sudo mkdir -p /var/www/certbot
-sudo nginx -t
-sudo systemctl enable --now nginx
-sudo systemctl reload nginx
-echo "  ✓ nginx reloaded; HTTP listening on 80"
 
 echo "===== 7. Sudoers for GH Actions deploy ====="
 SUDOERS="/etc/sudoers.d/vya-deploy"
@@ -141,9 +179,15 @@ echo "   Logs:     tail -f $REPO_DIR/server.log"
 echo "   Health:   curl -s http://127.0.0.1:8000/health"
 echo "================================================================"
 echo
-echo " Next: get HTTPS certificate (one-time)"
-echo "   sudo certbot --nginx -d $DOMAIN -d $WWW_DOMAIN \\"
-echo "     --non-interactive --agree-tos -m $ADMIN_EMAIL --redirect"
+if [ "$NO_NGINX" = "1" ]; then
+  echo " Topology: AWS ALB/CloudFront → EC2:80 → Flask (no nginx, no certbot)"
+  echo "   Make sure AWS security group exposes port 80, and ALB target group"
+  echo "   is HTTP:80 with health-check path /health"
+else
+  echo " Next: get HTTPS certificate (one-time)"
+  echo "   sudo certbot --nginx -d $DOMAIN -d $WWW_DOMAIN \\"
+  echo "     --non-interactive --agree-tos -m $ADMIN_EMAIL --redirect"
+fi
 echo
 echo " ⚠ For GitHub Actions auto-deploy, your workflow YAML's 'cd' line"
 echo "   must use:  cd $REPO_DIR"
