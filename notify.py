@@ -22,7 +22,11 @@ def _kitchen_emails() -> list:
     return [a.strip() for a in raw.split(",") if a.strip()]
 
 
-KITCHEN_PHONE = os.getenv("KITCHEN_PHONE", "").strip()
+# Kitchen phones — supports KITCHEN_PHONES (plural, comma-separated, preferred)
+# or legacy KITCHEN_PHONE (single).
+def _kitchen_phones() -> list:
+    raw = os.getenv("KITCHEN_PHONES") or os.getenv("KITCHEN_PHONE", "")
+    return [p.strip() for p in raw.split(",") if p.strip()]
 GMAIL_USER = os.getenv("GMAIL_USER", "")
 GMAIL_PASS = os.getenv("GMAIL_APP_PASSWORD", "").replace(" ", "")
 WECHAT = "ya312322063"
@@ -234,12 +238,10 @@ def email_kitchen(order: dict, items: list, event: str,
 
 
 def sms_kitchen_new_order(order: dict, items: list) -> bool:
-    """Heads-up SMS to KITCHEN_PHONE when a new reservation arrives.
-
-    Only fired on `received` event (kitchen already knows about confirms /
-    rejects since they triggered them). Kept short — single segment ideal.
-    """
-    if not KITCHEN_PHONE:
+    """Heads-up SMS to every number in KITCHEN_PHONES when a new
+    reservation arrives. Only fired on `received` event."""
+    phones = _kitchen_phones()
+    if not phones:
         return False
     qty = sum(int(i.get("quantity", 0)) for i in items)
     body = (
@@ -249,7 +251,11 @@ def sms_kitchen_new_order(order: dict, items: list) -> bool:
         f"送达 {order['delivery_date']} "
         f"审核 {PUBLIC_BASE}/admin/orders/{order['id']}"
     )
-    return _send_sms(KITCHEN_PHONE, body)
+    any_ok = False
+    for p in phones:
+        if _send_sms(p, body):
+            any_ok = True
+    return any_ok
 
 
 # ---------- SMS ----------
