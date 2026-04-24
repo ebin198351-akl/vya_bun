@@ -252,7 +252,19 @@
                 <span class="lang zh">详细地址(街道+门牌+邮编)</span>
                 <span class="lang en">Full address (street + number + postcode)</span>
               </label>
-              <input type="text" id="address-input" autocomplete="off"
+              <!-- Chrome ignores autocomplete=off, but accepts unknown values
+                   like new-password / chrome-off / a random unknown token,
+                   which suppresses its native address autofill bar. -->
+              <input type="search" id="address-input"
+                     autocomplete="new-password"
+                     autocorrect="off"
+                     autocapitalize="off"
+                     spellcheck="false"
+                     name="addr-search-{{ delivery_dates[0].iso }}"
+                     data-1p-ignore
+                     data-lpignore="true"
+                     data-form-type="other"
+                     data-bwignore
                      placeholder="e.g. 12 Smith Street, Takapuna, Auckland 0622">
               {% if maps_enabled %}
               <p class="addr-hint">
@@ -281,15 +293,19 @@
             <h2><span class="num">2</span> <span class="lang zh">联系方式</span><span class="lang en">Contact Details</span></h2>
             <div class="field">
               <label><span class="lang zh">姓名</span><span class="lang en">Name</span></label>
-              <input type="text" id="cust-name" required>
+              <input type="text" id="cust-name" autocomplete="name"
+                     data-1p-ignore data-lpignore="true" required>
             </div>
             <div class="field">
               <label><span class="lang zh">手机(收 SMS 通知)</span><span class="lang en">Mobile (for SMS)</span></label>
-              <input type="tel" id="cust-phone" placeholder="+64..." required>
+              <input type="tel" id="cust-phone" autocomplete="tel"
+                     data-1p-ignore data-lpignore="true"
+                     placeholder="+64..." required>
             </div>
             <div class="field">
               <label><span class="lang zh">邮箱(可选,收订单确认)</span><span class="lang en">Email (optional, order confirmation)</span></label>
-              <input type="email" id="cust-email">
+              <input type="email" id="cust-email" autocomplete="email"
+                     data-1p-ignore data-lpignore="true">
             </div>
             <div class="field">
               <label><span class="lang zh">备注(可选)</span><span class="lang en">Notes (optional)</span></label>
