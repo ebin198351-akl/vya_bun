@@ -178,8 +178,8 @@
               Satisfy your cravings and bring you the warmth of home.
             </p>
             <div class="hero-cta">
-              <a href="#order" class="btn primary lang zh">立即下单</a>
-              <a href="#order" class="btn primary lang en">Order Now</a>
+              <a href="#menu" data-jump-tab="this-week" class="btn primary lang zh">立即下单</a>
+              <a href="#menu" data-jump-tab="this-week" class="btn primary lang en">Order Now</a>
               <a href="#menu" class="btn ghost lang zh">查看菜单</a>
               <a href="#menu" class="btn ghost lang en">View Menu</a>
             </div>
@@ -2700,6 +2700,14 @@
         }
         $tabs.forEach(t => {
           t.addEventListener("click", () => activateTab(t.dataset.menuTab));
+        });
+
+        // CTA like "立即下单" → scroll to #menu AND switch to this-week tab
+        document.addEventListener("click", (e) => {
+          const a = e.target.closest("a[data-jump-tab]");
+          if (!a) return;
+          const which = a.dataset.jumpTab;
+          setTimeout(() => activateTab(which), 50);
         });
 
         // ---------- this-week render ----------
