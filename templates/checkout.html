@@ -223,7 +223,8 @@
     .addr-hint::before { content: "💡"; }
 
     /* Autocomplete dropdown (custom, matches brand) */
-    .addr-wrap { position: relative; }
+    .addr-wrap { position: relative; display: block; width: 100%; }
+    .addr-wrap input { width: 100%; box-sizing: border-box; }
     .addr-suggestions {
       position: absolute; left: 0; right: 0; top: 100%;
       z-index: 50;
