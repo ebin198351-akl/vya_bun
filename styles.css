@@ -2036,6 +2036,144 @@ body::before {
 }
 
 /* ============================================
+   Trust strip — MPI A-grade certificate
+   ============================================ */
+.trust-strip {
+  background: linear-gradient(90deg,
+    rgba(192, 56, 42, 0.06) 0%,
+    rgba(91, 122, 82, 0.06) 100%);
+  border-top: 2px solid var(--stamp);
+  border-bottom: 1px solid rgba(192, 56, 42, 0.15);
+  padding: 14px 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
+}
+.trust-strip:hover {
+  background: linear-gradient(90deg,
+    rgba(192, 56, 42, 0.10) 0%,
+    rgba(91, 122, 82, 0.10) 100%);
+}
+.trust-strip::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--stamp);
+}
+.trust-inner {
+  display: flex; align-items: center; gap: 18px;
+}
+.trust-badge {
+  flex-shrink: 0;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--stamp);
+  color: #fff7ed;
+  font-family: "Noto Serif SC", serif;
+  font-size: 28px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 2px var(--stamp),
+    0 4px 12px rgba(122, 29, 24, 0.35);
+  transform: rotate(-6deg);
+}
+.trust-copy { flex: 1; min-width: 0; }
+.trust-line-1 {
+  font-family: "Noto Serif SC", serif;
+  font-size: 16px;
+  color: var(--soy);
+  margin-bottom: 2px;
+}
+.trust-line-1 strong { color: var(--stamp); }
+.trust-line-2 {
+  font-size: 13px;
+  color: var(--soy-mid);
+}
+.trust-thumb {
+  flex-shrink: 0;
+  width: 70px; height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 12px rgba(58, 31, 15, 0.18);
+}
+.trust-thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+@media (max-width: 600px) {
+  .trust-line-1 { font-size: 14px; }
+  .trust-line-2 { font-size: 12px; }
+  .trust-thumb { display: none; }
+  .trust-badge { width: 44px; height: 44px; font-size: 22px; }
+}
+
+/* Certificate modal */
+.cert-modal {
+  position: fixed; inset: 0;
+  z-index: 1100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.cert-modal[hidden] { display: none; }
+.cert-overlay {
+  position: absolute; inset: 0;
+  background: rgba(58, 31, 15, 0.6);
+  backdrop-filter: blur(6px);
+  animation: cartFadeIn 0.2s ease;
+}
+.cert-panel {
+  position: relative; z-index: 1;
+  background: #fff7ed;
+  border-radius: 16px;
+  padding: 28px 28px 22px;
+  max-width: 720px; max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(58, 31, 15, 0.4);
+  animation: cartSlideIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.cert-panel h3 {
+  font-family: "Noto Serif SC", serif;
+  font-size: 22px;
+  color: var(--soy);
+  margin: 0 0 18px;
+  text-align: center;
+}
+.cert-close {
+  position: absolute; top: 12px; right: 14px;
+  width: 36px; height: 36px;
+  border: none; border-radius: 50%;
+  background: var(--paper-deep);
+  color: var(--soy);
+  font-size: 22px; cursor: pointer;
+  z-index: 2;
+}
+.cert-close:hover { background: rgba(192, 56, 42, 0.18); }
+.cert-image-wrap {
+  background: #fff;
+  border: 1px solid rgba(58, 31, 15, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex; justify-content: center;
+}
+.cert-image-wrap img {
+  max-width: 100%; max-height: 70vh; height: auto;
+  border-radius: 4px;
+}
+.cert-missing {
+  padding: 60px 20px;
+  text-align: center;
+  color: #9ca3af; font-size: 14px; font-style: italic;
+}
+.cert-meta {
+  text-align: center;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--soy-mid);
+}
+.cert-meta strong { color: var(--stamp); }
+
+/* ============================================
    Menu tabs (this-week / next-week / all)
    ============================================ */
 .menu-tabs {
