@@ -31,6 +31,34 @@ def verify_order_token(order_id: int, token: str) -> bool:
         return False
     return hmac.compare_digest(make_order_token(order_id), token)
 
+
+# ---------- public base URL (auto-detect from request, fallback to env) ----------
+
+def current_base_url() -> str:
+    """Best canonical base URL for emails / SMS links.
+
+    Priority:
+      1. Flask request context  → scheme + host the customer actually hit
+         (handles localhost dev AND production transparently, including
+         AWS ALB → http://EC2 with X-Forwarded-Proto=https)
+      2. PUBLIC_BASE_URL env var
+      3. Hardcoded localhost dev default
+    """
+    try:
+        from flask import has_request_context, request
+        if has_request_context():
+            # X-Forwarded-Proto wins (AWS ALB / CloudFront set this); else
+            # request.scheme reads it from ProxyFix or socket.
+            scheme = request.headers.get("X-Forwarded-Proto") or request.scheme or "http"
+            host = request.headers.get("X-Forwarded-Host") or request.host
+            # Sanity: never return https://localhost — browsers won't trust it
+            if host.startswith(("127.", "localhost", "0.0.0.0")):
+                scheme = "http"
+            return f"{scheme}://{host}".rstrip("/")
+    except Exception:
+        pass
+    return os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+
 NZ = ZoneInfo("Pacific/Auckland")
 
 

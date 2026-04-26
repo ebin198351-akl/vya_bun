@@ -27,16 +27,29 @@ def _kitchen_emails() -> list:
 def _kitchen_phones() -> list:
     raw = os.getenv("KITCHEN_PHONES") or os.getenv("KITCHEN_PHONE", "")
     return [p.strip() for p in raw.split(",") if p.strip()]
+
+
 GMAIL_USER = os.getenv("GMAIL_USER", "")
 GMAIL_PASS = os.getenv("GMAIL_APP_PASSWORD", "").replace(" ", "")
 WECHAT = "ya312322063"
-PUBLIC_BASE = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+
+
+def _base() -> str:
+    """Canonical base URL — auto-detected from current Flask request when
+    possible, falls back to PUBLIC_BASE_URL env, then localhost."""
+    from helpers import current_base_url
+    return current_base_url()
 
 
 def order_link(order: dict) -> str:
     """Tokenised customer-facing link to the order status page."""
     from helpers import make_order_token
-    return f"{PUBLIC_BASE}/order/{order['id']}?t={make_order_token(order['id'])}"
+    return f"{_base()}/order/{order['id']}?t={make_order_token(order['id'])}"
+
+
+def admin_link(order: dict) -> str:
+    """Admin order detail link (used in kitchen emails / SMS)."""
+    return f"{_base()}/admin/orders/{order['id']}"
 
 
 # ---------- email plumbing ----------
@@ -203,7 +216,7 @@ def email_kitchen(order: dict, items: list, event: str,
         "rejected":  "订单已拒绝(由你)",
     }.get(event, event)
     items_block = _items_block(items)
-    admin_link = f"{PUBLIC_BASE}/admin/orders/{order['id']}"
+    admin_url = admin_link(order)
     subject = (
         f"【{label}】#{order['id']} – {order['customer_name']} – "
         f"NZ$ {order['total_cents']/100:.2f}"
@@ -225,7 +238,7 @@ def email_kitchen(order: dict, items: list, event: str,
         body += (
             f"\n=== 操作 ===\n"
             f"请到后台审核 → 确认或拒绝:\n"
-            f"  {admin_link}\n"
+            f"  {admin_url}\n"
         )
     if reason:
         body += f"\n拒绝原因(已发给客户):\n{reason}\n"
@@ -249,7 +262,7 @@ def sms_kitchen_new_order(order: dict, items: list) -> bool:
         f"{order['customer_name']} {order['phone']} "
         f"{qty} 个 NZ$ {order['total_cents']/100:.2f} "
         f"送达 {order['delivery_date']} "
-        f"审核 {PUBLIC_BASE}/admin/orders/{order['id']}"
+        f"审核 {admin_link(order)}"
     )
     any_ok = False
     for p in phones:
