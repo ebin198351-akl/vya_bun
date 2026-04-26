@@ -2782,10 +2782,15 @@
             const stockLabel = isOut
               ? t("已售罄", "Sold out")
               : t(`余 ${it.remaining}`, `${it.remaining} left`);
+            const stampHtml = isOut ? `
+              <div class="wc-soldout-stamp" aria-label="${t('今日订满', 'Sold out')}">
+                <span class="zh">${t('售罄', '售罄')}</span>
+                <span class="en">SOLD OUT</span>
+              </div>` : '';
             return `
               <article class="weekly-card${isOut ? ' is-soldout' : ''}" data-id="${it.id}">
-                ${isOut ? `<div class="wc-soldout-stamp"><span>${t("今日订满", "SOLD OUT")}</span></div>` : ''}
                 <div class="wc-image">
+                  ${stampHtml}
                   <img src="/${it.image}" alt="${it.name_zh}" loading="lazy">
                   <span class="wc-pos">#${it.position}</span>
                   <span class="wc-stock ${stockLevel}">${stockLabel}</span>
