@@ -61,6 +61,19 @@ def dashboard():
     weekly_next = models.get_weekly(next_week_start())
     pending = models.list_orders(status="pending", limit=10)
     confirmed = models.list_orders(status="confirmed", limit=10)
+
+    # Compute today's order-window state (for the sold-out one-click button)
+    from helpers import next_delivery_date
+    from db import get_conn
+    target = next_delivery_date()
+    with get_conn() as c:
+        soldout_count = c.execute(
+            "SELECT COUNT(*) FROM daily_soldout WHERE delivery_date=?",
+            (target.isoformat(),),
+        ).fetchone()[0]
+    active_total = sum(1 for i in items if i["active"])
+    is_all_soldout = active_total > 0 and soldout_count >= active_total
+
     return render_template(
         "admin/dashboard.html",
         items=items,
@@ -69,6 +82,10 @@ def dashboard():
         pending=pending,
         confirmed=confirmed,
         paid=confirmed,  # template back-compat
+        target_date=target,
+        target_label=date_label(target, "zh"),
+        soldout_count=soldout_count,
+        is_all_soldout=is_all_soldout,
         this_week_start=this_week_start(),
         next_week_start=next_week_start(),
         date_label=date_label,
@@ -161,6 +178,54 @@ def order_confirm(oid):
 def order_reject(oid):
     reason = (request.form.get("reason") or "").strip() or None
     return _change_status(oid, "cancelled", reason=reason)
+
+
+@bp.route("/soldout", methods=["POST"])
+@admin_required
+def soldout_mark_all():
+    """One-click: mark every active item in this week's menu as sold-out
+    for the next-delivery-date. Used when offline orders exhaust capacity."""
+    from db import get_conn
+    from datetime import date as _date
+    target_str = (request.form.get("date") or "").strip()
+    try:
+        target = _date.fromisoformat(target_str) if target_str else None
+    except ValueError:
+        target = None
+    if not target:
+        from helpers import next_delivery_date
+        target = next_delivery_date()
+
+    items = models.list_menu_items(active_only=True)
+    with get_conn() as c:
+        for it in items:
+            c.execute(
+                "INSERT OR IGNORE INTO daily_soldout(delivery_date, menu_item_id) "
+                "VALUES (?, ?)", (target.isoformat(), it["id"]),
+            )
+        c.commit()
+    flash(f"✓ 送达日 {target.isoformat()} 全部标记为售罄,前台立刻显示", "ok")
+    return redirect(url_for("admin.dashboard"))
+
+
+@bp.route("/soldout/clear", methods=["POST"])
+@admin_required
+def soldout_clear():
+    """Undo the sold-out flag — restore normal sales for the given date."""
+    from db import get_conn
+    from datetime import date as _date
+    target_str = (request.form.get("date") or "").strip()
+    try:
+        target = _date.fromisoformat(target_str)
+    except ValueError:
+        from helpers import next_delivery_date
+        target = next_delivery_date()
+    with get_conn() as c:
+        c.execute("DELETE FROM daily_soldout WHERE delivery_date=?",
+                  (target.isoformat(),))
+        c.commit()
+    flash(f"✓ 送达日 {target.isoformat()} 恢复销售", "ok")
+    return redirect(url_for("admin.dashboard"))
 
 
 @bp.route("/orders/<int:oid>/mark-delivered", methods=["POST"])

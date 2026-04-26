@@ -2723,13 +2723,15 @@
           }
           $thisGrid.innerHTML = items.map(it => {
             const inCart = cart[it.id]?.qty || 0;
-            const stockLevel = it.remaining === 0 ? "out"
+            const isOut = it.remaining === 0;
+            const stockLevel = isOut ? "out"
                               : it.remaining <= 10 ? "low" : "";
-            const stockLabel = it.remaining === 0
+            const stockLabel = isOut
               ? t("已售罄", "Sold out")
               : t(`余 ${it.remaining}`, `${it.remaining} left`);
             return `
-              <article class="weekly-card" data-id="${it.id}">
+              <article class="weekly-card${isOut ? ' is-soldout' : ''}" data-id="${it.id}">
+                ${isOut ? `<div class="wc-soldout-stamp"><span>${t("今日订满", "SOLD OUT")}</span></div>` : ''}
                 <div class="wc-image">
                   <img src="/${it.image}" alt="${it.name_zh}" loading="lazy">
                   <span class="wc-pos">#${it.position}</span>

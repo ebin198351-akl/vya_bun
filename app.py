@@ -255,7 +255,7 @@ def create_app():
     def _stock_for_date(item_ids, delivery_iso):
         """Returns {item_id: ordered_qty} for this delivery_date.
 
-        Counts only paid orders' items (pending orders don't lock stock yet).
+        Counts only paid/confirmed orders' items (pending don't lock).
         """
         if not item_ids:
             return {}
@@ -265,13 +265,23 @@ def create_app():
             FROM order_items oi
             JOIN orders o ON o.id = oi.order_id
             WHERE o.delivery_date = ?
-              AND o.payment_status = 'paid'
+              AND o.payment_status IN ('paid', 'confirmed')
               AND oi.menu_item_id IN ({placeholders})
             GROUP BY oi.menu_item_id
         """
         with get_conn() as c:
             rows = c.execute(sql, [delivery_iso, *item_ids]).fetchall()
         return {r["menu_item_id"]: r["qty"] for r in rows}
+
+    def _soldout_for_date(delivery_iso):
+        """Returns set of menu_item_ids manually marked sold-out by admin
+        for this delivery_date."""
+        with get_conn() as c:
+            rows = c.execute(
+                "SELECT menu_item_id FROM daily_soldout WHERE delivery_date=?",
+                (delivery_iso,),
+            ).fetchall()
+        return {r["menu_item_id"] for r in rows}
 
     @app.route("/api/menu/this-week")
     def api_menu_this_week():
@@ -280,11 +290,17 @@ def create_app():
         delivery = next_delivery_date()
         item_ids = [it["id"] for _, it in weekly]
         ordered = _stock_for_date(item_ids, delivery.isoformat())
+        soldout = _soldout_for_date(delivery.isoformat())
         items = []
         for pos, it in weekly:
             payload = _serialize_item(it)
             payload["position"] = pos
-            payload["remaining"] = max(0, it["daily_cap"] - ordered.get(it["id"], 0))
+            if it["id"] in soldout:
+                payload["remaining"] = 0
+                payload["soldout_manual"] = True
+            else:
+                payload["remaining"] = max(0, it["daily_cap"] - ordered.get(it["id"], 0))
+                payload["soldout_manual"] = False
             items.append(payload)
         return jsonify({
             "week_start": ws.isoformat(),
@@ -292,6 +308,7 @@ def create_app():
             "delivery_label_zh": date_label(delivery, "zh"),
             "delivery_label_en": date_label(delivery, "en"),
             "items": items,
+            "all_soldout": bool(items) and all(i["remaining"] == 0 for i in items),
         })
 
     @app.route("/api/menu/next-week")
@@ -436,10 +453,16 @@ def create_app():
                 return jsonify(success=False,
                                error=f"商品 #{li['id']} 已下架"), 400
 
-        # Re-check per-item stock
+        # Re-check per-item stock + manual sold-out overrides
         ordered = _stock_for_date(list(items_by_id.keys()), ddate.isoformat())
+        soldout = _soldout_for_date(ddate.isoformat())
         for li in cart:
             mi = items_by_id[int(li["id"])]
+            if mi["id"] in soldout:
+                return jsonify(
+                    success=False,
+                    error=f"{mi['name_zh']} 当日已售罄,请改选其它口味或日期"
+                ), 400
             available = mi["daily_cap"] - ordered.get(mi["id"], 0)
             if int(li["qty"]) > available:
                 return jsonify(

@@ -312,6 +312,43 @@ input:focus, select:focus {
   box-shadow: 0 8px 18px rgba(192, 56, 42, 0.35);
 }
 
+/* ---------- soldout panel ---------- */
+.soldout-panel {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  padding: 16px 22px;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid rgba(91, 122, 82, 0.25);
+  border-radius: 12px;
+}
+.soldout-panel.is-soldout {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: rgba(192, 56, 42, 0.35);
+}
+.soldout-label {
+  font-family: "Noto Serif SC", serif;
+  font-size: 18px; font-weight: 600; color: var(--soy);
+  margin-bottom: 2px;
+}
+.soldout-target { font-size: 13px; color: var(--soy-mid); }
+.soldout-actions form { margin: 0; }
+.soldout-btn {
+  padding: 12px 22px; border-radius: 10px; border: none;
+  font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+}
+.soldout-btn.stop { background: var(--stamp); color: #fff7ed; }
+.soldout-btn.stop:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(192, 56, 42, 0.4);
+}
+.soldout-btn.restore { background: var(--bamboo); color: #fff7ed; }
+.soldout-btn.restore:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(91, 122, 82, 0.4);
+}
+
 .kv { display: grid; grid-template-columns: 100px 1fr; gap: 6px 16px; margin: 0; }
 .kv dt { color: #6b7280; font-size: 13px; }
 .kv dd { margin: 0; color: var(--ink); font-size: 14px; }

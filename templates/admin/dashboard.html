@@ -3,6 +3,38 @@
 {% block content %}
 <h1 class="page-title">概览</h1>
 
+{# ====== Today's order-window: one-click sold-out ====== #}
+<section class="soldout-panel {{ 'is-soldout' if is_all_soldout }}">
+  <div class="soldout-info">
+    <div class="soldout-label">
+      {% if is_all_soldout %}🚫 当前已暂停接单{% else %}今日接单中{% endif %}
+    </div>
+    <div class="soldout-target">
+      送达日 <strong>{{ target_label }}</strong>
+      {% if is_all_soldout %}
+        — 所有口味标记为售罄,前台显示已订满
+      {% else %}
+        — 接受预约中
+      {% endif %}
+    </div>
+  </div>
+  <div class="soldout-actions">
+    {% if is_all_soldout %}
+      <form method="post" action="{{ url_for('admin.soldout_clear') }}"
+            onsubmit="return confirm('恢复正常销售?客户立刻能下单。')">
+        <input type="hidden" name="date" value="{{ target_date.isoformat() }}">
+        <button type="submit" class="soldout-btn restore">↩ 恢复销售</button>
+      </form>
+    {% else %}
+      <form method="post" action="{{ url_for('admin.soldout_mark_all') }}"
+            onsubmit="return confirm('一键把 {{ target_label }} 全部口味标记为售罄?线上立刻无法下单,前台显示售罄。')">
+        <input type="hidden" name="date" value="{{ target_date.isoformat() }}">
+        <button type="submit" class="soldout-btn stop">🚫 一键全部售罄</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
 <div class="stat-grid">
   <div class="stat-card">
     <div class="stat-label">菜单总数</div>

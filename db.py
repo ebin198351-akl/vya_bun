@@ -79,6 +79,17 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT
 );
+
+-- Manual "sold out" override per (delivery_date, menu_item).
+-- Set by admin via the dashboard "全部售罄" button when offline orders
+-- exhaust today's capacity. Independent of daily_cap so easy to clear.
+CREATE TABLE IF NOT EXISTS daily_soldout (
+  delivery_date TEXT NOT NULL,
+  menu_item_id INTEGER NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
+  set_at TEXT DEFAULT (datetime('now')),
+  PRIMARY KEY(delivery_date, menu_item_id)
+);
+CREATE INDEX IF NOT EXISTS idx_soldout_date ON daily_soldout(delivery_date);
 """
 
 DEFAULT_SETTINGS = {

@@ -2340,6 +2340,42 @@ body::before {
   background: var(--bamboo);
 }
 
+/* Sold-out: prominent diagonal stamp, dimmed image, hidden CTAs */
+.weekly-card.is-soldout {
+  position: relative;
+  filter: saturate(0.55);
+}
+.weekly-card.is-soldout .wc-image img { filter: brightness(0.7); }
+.weekly-card.is-soldout .qty-stepper,
+.weekly-card.is-soldout .btn-add { display: none; }
+.weekly-card.is-soldout .wc-buy::after {
+  content: "";  /* keep grid space */
+  display: block;
+}
+.wc-soldout-stamp {
+  position: absolute;
+  top: 50%; left: -8%; right: -8%;
+  transform: translateY(-50%) rotate(-8deg);
+  background: rgba(192, 56, 42, 0.95);
+  color: #fff7ed;
+  text-align: center;
+  padding: 10px 0;
+  font-family: "Ma Shan Zheng", "Noto Serif SC", serif;
+  font-size: 30px;
+  letter-spacing: 0.18em;
+  border-top: 3px dashed #fff7ed;
+  border-bottom: 3px dashed #fff7ed;
+  pointer-events: none;
+  z-index: 5;
+  box-shadow:
+    0 0 0 4px rgba(255, 247, 237, 0.4),
+    0 12px 32px rgba(122, 29, 24, 0.45);
+}
+.wc-soldout-stamp span {
+  display: inline-block;
+  text-shadow: 0 2px 4px rgba(58, 31, 15, 0.4);
+}
+
 /* Preview (next-week) cards: dimmed, no stepper */
 .weekly-grid.preview .weekly-card {
   opacity: 0.85;
