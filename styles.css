@@ -2040,16 +2040,14 @@ body::before {
    Lives at the bottom in the compliance section,
    2-column layout: cert card | text + allergens
    ============================================ */
-/* Outer "framed" wrapper holding cert + allergen text together,
-   centered on the page like a single document. */
+/* Outer "framed" wrapper — fills the container width like the other
+   sections, presenting cert + allergens as one official document. */
 .compliance-card {
-  max-width: 880px;
-  margin: 0 auto;
   background: #fff;
   border: 1px solid rgba(192, 56, 42, 0.18);
   border-top: 4px solid var(--stamp);
   border-radius: 14px;
-  padding: 28px 32px;
+  padding: 32px 40px;
   box-shadow:
     0 16px 36px rgba(58, 31, 15, 0.10),
     0 2px 6px rgba(58, 31, 15, 0.05);
@@ -2057,13 +2055,14 @@ body::before {
 
 .compliance-layout {
   display: grid;
-  grid-template-columns: minmax(220px, 260px) 1fr;
-  gap: 32px;
-  align-items: start;       /* top-align — both flow naturally */
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+  gap: 48px;
+  align-items: start;
   text-align: left;
 }
-@media (max-width: 600px) {
-  .compliance-card { padding: 20px 18px; border-radius: 12px; }
+@media (max-width: 720px) {
+  .compliance-card { padding: 22px 20px; border-radius: 12px; }
+  .compliance-layout { grid-template-columns: 1fr; gap: 28px; }
 }
 @media (max-width: 760px) {
   .compliance-layout {
@@ -2117,7 +2116,7 @@ body::before {
 
 .cert-showcase-img {
   position: relative;
-  height: 160px;              /* compact — matches right text column */
+  height: 220px;              /* taller now that the card is wider */
   border-radius: 8px;
   overflow: hidden;
   background: var(--paper);
