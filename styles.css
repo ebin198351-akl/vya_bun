@@ -1442,6 +1442,16 @@ p {
 .compliance-footer ul li {
   padding: 0;
   margin: 2px 0;
+  position: relative;
+}
+/* Small stamp-red dot marker — distinguishes list items from paragraphs
+   without indenting the text away from the left edge. */
+.compliance-footer ul li::before {
+  content: "·";
+  color: var(--stamp);
+  font-weight: 700;
+  margin-right: 6px;
+  font-size: 1.1em;
 }
 
 .compliance-footer-content {
