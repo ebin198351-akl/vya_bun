@@ -263,47 +263,6 @@
         </div>
       </section>
 
-      <!-- Trust strip — Auckland EatSafe Grade A certificate -->
-      <section class="trust-strip" data-cert-trigger role="button" tabindex="0">
-        <div class="container trust-inner">
-          <div class="trust-badge" aria-hidden="true">A</div>
-          <div class="trust-copy">
-            <div class="trust-line-1">
-              <span class="lang zh">Auckland Council EatSafe <strong>食品安全 A 级 · 优秀</strong></span>
-              <span class="lang en">Auckland Council EatSafe <strong>Food Safety Grade A · Excellent</strong></span>
-            </div>
-            <div class="trust-line-2">
-              <span class="lang zh">许可证 #52100580047 · 有效期至 2027-03-03 · 点击查看证书 →</span>
-              <span class="lang en">Licence #52100580047 · valid until 03-Mar-2027 · Click to view certificate →</span>
-            </div>
-          </div>
-          <div class="trust-thumb">
-            <img src="image/cert_a_grade.jpg" alt="Grade A food safety certificate"
-                 loading="lazy" onerror="this.style.display='none'">
-          </div>
-        </div>
-      </section>
-
-      <!-- A-grade certificate modal -->
-      <div class="cert-modal" id="cert-modal" hidden aria-hidden="true">
-        <div class="cert-overlay" data-cert-close></div>
-        <div class="cert-panel" role="dialog" aria-label="A grade certificate">
-          <button type="button" class="cert-close" data-cert-close aria-label="Close">×</button>
-          <h3>
-            <span class="lang zh">Auckland Council EatSafe — 食品安全 A 级</span>
-            <span class="lang en">Auckland Council EatSafe — Food Safety Grade A</span>
-          </h3>
-          <div class="cert-image-wrap">
-            <img src="image/cert_a_grade.jpg" alt="Grade A food safety certificate"
-                 onerror="this.outerHTML='<div class=&quot;cert-missing&quot;>证书图片尚未上传 / Certificate image not yet uploaded</div>'">
-          </div>
-          <p class="cert-meta">
-            <span class="lang zh">许可证号:<strong>52100580047</strong> · 有效期 2027-03-03 · 由 Auckland Council 颁发</span>
-            <span class="lang en">Licence #<strong>52100580047</strong> · valid until 03-Mar-2027 · issued by Auckland Council</span>
-          </p>
-        </div>
-      </div>
-
       <!-- About -->
       <section id="about" class="section section-alt">
         <div class="container about-inner">
@@ -1896,22 +1855,54 @@
       </div>
     </aside>
 
-    <!-- Food Safety & Compliance (Footer) -->
+    <!-- Food Safety & Compliance -->
     <section id="compliance" class="compliance-footer">
       <div class="container">
-        <div class="compliance-footer-content">
+        <div class="compliance-layout">
+
+          <!-- LEFT: Certificate showcase card -->
+          <div class="cert-showcase" data-cert-trigger role="button" tabindex="0"
+               aria-label="View food safety certificate">
+            <div class="cert-showcase-head">
+              <div class="cert-grade-badge" aria-hidden="true">A</div>
+              <div class="cert-showcase-title">
+                <div class="t1">
+                  <span class="lang zh">食品安全 A 级 · 优秀</span>
+                  <span class="lang en">Food Safety Grade A · Excellent</span>
+                </div>
+                <div class="t2">
+                  <span class="lang zh">由 Auckland Council EatSafe 评定</span>
+                  <span class="lang en">Rated by Auckland Council EatSafe</span>
+                </div>
+              </div>
+            </div>
+            <div class="cert-showcase-img">
+              <img src="image/cert_a_grade.jpg"
+                   alt="Auckland Council EatSafe Grade A certificate"
+                   loading="lazy"
+                   onerror="this.style.display='none'">
+              <div class="cert-zoom-hint">
+                <span class="lang zh">🔍 点击查看大图</span>
+                <span class="lang en">🔍 Click to enlarge</span>
+              </div>
+            </div>
+            <dl class="cert-showcase-meta">
+              <dt><span class="lang zh">许可证号</span><span class="lang en">Licence #</span></dt>
+              <dd>52100580047</dd>
+              <dt><span class="lang zh">有效期至</span><span class="lang en">Valid until</span></dt>
+              <dd>03-Mar-2027</dd>
+              <dt><span class="lang zh">颁发机构</span><span class="lang en">Issued by</span></dt>
+              <dd>Auckland Council</dd>
+            </dl>
+          </div>
+
+          <!-- RIGHT: Compliance text + allergens -->
           <div class="compliance-footer-text">
-            <p class="lang zh">
-              <strong>食品经营许可证编号：</strong>52100580047
+            <p class="lang zh" style="font-size: 13px; color: var(--soy-mid); margin-top: 0;">
+              本厨房为小型家庭厨房，遵循新西兰食品安全法规，所有产品均符合 MPI 食品安全要求。
             </p>
-            <p class="lang en">
-              <strong>Food Business Licence Number:</strong>52100580047
-            </p>
-            <p class="lang zh" style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
-              本厨房为小型家庭厨房，遵循新西兰食品安全法规，所有产品均符合MPI食品安全要求。
-            </p>
-            <p class="lang en" style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
-              This is a small home kitchen operating in compliance with New Zealand food safety regulations. All products meet MPI food safety requirements.
+            <p class="lang en" style="font-size: 13px; color: var(--soy-mid); margin-top: 0;">
+              Small home kitchen operating in compliance with NZ food safety regulations. All products meet MPI requirements.
             </p>
 
             <!-- Allergen Information -->
@@ -1959,9 +1950,30 @@
               Products are made in a shared kitchen and may contain traces of crustaceans and eggs. Please contact us before ordering if you have allergies.
             </p>
           </div>
+
         </div>
       </div>
     </section>
+
+    <!-- A-grade certificate full-size modal (triggered by cert-showcase) -->
+    <div class="cert-modal" id="cert-modal" hidden aria-hidden="true">
+      <div class="cert-overlay" data-cert-close></div>
+      <div class="cert-panel" role="dialog" aria-label="A grade certificate">
+        <button type="button" class="cert-close" data-cert-close aria-label="Close">×</button>
+        <h3>
+          <span class="lang zh">Auckland Council EatSafe — 食品安全 A 级 · 优秀</span>
+          <span class="lang en">Auckland Council EatSafe — Food Safety Grade A · Excellent</span>
+        </h3>
+        <div class="cert-image-wrap">
+          <img src="image/cert_a_grade.jpg" alt="Grade A food safety certificate"
+               onerror="this.outerHTML='<div class=&quot;cert-missing&quot;>证书图片尚未上传 / Certificate image not yet uploaded</div>'">
+        </div>
+        <p class="cert-meta">
+          <span class="lang zh">许可证 #<strong>52100580047</strong> · 有效期 03-Mar-2027 · 由 Auckland Council 颁发</span>
+          <span class="lang en">Licence #<strong>52100580047</strong> · valid until 03-Mar-2027 · issued by Auckland Council</span>
+        </p>
+      </div>
+    </div>
 
     <footer class="site-footer">
       <div class="container footer-inner">

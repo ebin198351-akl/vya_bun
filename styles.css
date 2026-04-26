@@ -2036,76 +2036,115 @@ body::before {
 }
 
 /* ============================================
-   Trust strip — MPI A-grade certificate
+   Compliance — A-grade certificate showcase
+   Lives at the bottom in the compliance section,
+   2-column layout: cert card | text + allergens
    ============================================ */
-.trust-strip {
-  background: linear-gradient(90deg,
-    rgba(192, 56, 42, 0.06) 0%,
-    rgba(91, 122, 82, 0.06) 100%);
-  border-top: 2px solid var(--stamp);
-  border-bottom: 1px solid rgba(192, 56, 42, 0.15);
-  padding: 14px 0;
+.compliance-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 36px;
+  align-items: start;
+  text-align: left;
+}
+@media (max-width: 760px) {
+  .compliance-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Certificate showcase card (left column) */
+.cert-showcase {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 20px 16px;
+  box-shadow:
+    0 12px 28px rgba(58, 31, 15, 0.10),
+    0 2px 6px rgba(58, 31, 15, 0.06);
+  border-top: 4px solid var(--stamp);
   cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
-  overflow: hidden;
-  transition: background 0.2s;
 }
-.trust-strip:hover {
-  background: linear-gradient(90deg,
-    rgba(192, 56, 42, 0.10) 0%,
-    rgba(91, 122, 82, 0.10) 100%);
+.cert-showcase:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 36px rgba(58, 31, 15, 0.16),
+    0 4px 8px rgba(58, 31, 15, 0.08);
 }
-.trust-strip::before {
-  content: ""; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 4px; background: var(--stamp);
+.cert-showcase:focus-visible {
+  outline: 3px solid var(--stamp);
+  outline-offset: 4px;
 }
-.trust-inner {
-  display: flex; align-items: center; gap: 18px;
+
+.cert-showcase-head {
+  display: flex; gap: 14px; align-items: center;
+  margin-bottom: 14px;
 }
-.trust-badge {
+.cert-grade-badge {
   flex-shrink: 0;
   width: 56px; height: 56px;
   border-radius: 50%;
-  background: var(--stamp);
+  background: var(--bamboo);
   color: #fff7ed;
   font-family: "Noto Serif SC", serif;
-  font-size: 28px; font-weight: 700;
+  font-size: 30px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   border: 3px solid #fff;
   box-shadow:
-    0 0 0 2px var(--stamp),
-    0 4px 12px rgba(122, 29, 24, 0.35);
-  transform: rotate(-6deg);
+    0 0 0 2px var(--bamboo),
+    0 4px 10px rgba(91, 122, 82, 0.32);
+  transform: rotate(-4deg);
 }
-.trust-copy { flex: 1; min-width: 0; }
-.trust-line-1 {
+.cert-showcase-title .t1 {
   font-family: "Noto Serif SC", serif;
-  font-size: 16px;
-  color: var(--soy);
-  margin-bottom: 2px;
+  font-size: 16px; color: var(--soy); font-weight: 600;
 }
-.trust-line-1 strong { color: var(--stamp); }
-.trust-line-2 {
-  font-size: 13px;
-  color: var(--soy-mid);
-}
-.trust-thumb {
-  flex-shrink: 0;
-  width: 70px; height: 70px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid #fff;
-  box-shadow: 0 4px 12px rgba(58, 31, 15, 0.18);
-}
-.trust-thumb img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+.cert-showcase-title .t2 {
+  font-size: 12px; color: var(--soy-mid); margin-top: 2px;
 }
 
-@media (max-width: 600px) {
-  .trust-line-1 { font-size: 14px; }
-  .trust-line-2 { font-size: 12px; }
-  .trust-thumb { display: none; }
-  .trust-badge { width: 44px; height: 44px; font-size: 22px; }
+.cert-showcase-img {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper);
+  aspect-ratio: 3 / 4;       /* portrait — most certificates are this shape */
+  display: flex; align-items: center; justify-content: center;
+}
+.cert-showcase-img img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.4s ease;
+}
+.cert-showcase:hover .cert-showcase-img img {
+  transform: scale(1.04);
+}
+.cert-zoom-hint {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(58, 31, 15, 0.78);
+  color: #fff7ed;
+  text-align: center;
+  font-size: 12px;
+  padding: 8px 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cert-showcase:hover .cert-zoom-hint { opacity: 1; }
+
+.cert-showcase-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 14px 0 0;
+  font-size: 12px;
+}
+.cert-showcase-meta dt { color: #9ca3af; }
+.cert-showcase-meta dd {
+  margin: 0;
+  color: var(--soy);
+  font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, monospace;
 }
 
 /* Certificate modal */
