@@ -2042,9 +2042,9 @@ body::before {
    ============================================ */
 .compliance-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 360px) 1fr;
+  grid-template-columns: minmax(260px, 320px) 1fr;
   gap: 36px;
-  align-items: start;
+  align-items: stretch;     /* equal height: cert card matches text column */
   text-align: left;
 }
 @media (max-width: 760px) {
@@ -2054,11 +2054,11 @@ body::before {
   }
 }
 
-/* Certificate showcase card (left column) */
+/* Certificate showcase card (left column) — matches right column height */
 .cert-showcase {
   background: #fff;
   border-radius: 14px;
-  padding: 18px 20px 16px;
+  padding: 16px 18px 14px;
   box-shadow:
     0 12px 28px rgba(58, 31, 15, 0.10),
     0 2px 6px rgba(58, 31, 15, 0.06);
@@ -2066,6 +2066,9 @@ body::before {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .cert-showcase:hover {
   transform: translateY(-2px);
@@ -2107,18 +2110,23 @@ body::before {
 
 .cert-showcase-img {
   position: relative;
+  flex: 1;                    /* fills the vertical space matching text column */
+  min-height: 180px;
   border-radius: 8px;
   overflow: hidden;
   background: var(--paper);
-  aspect-ratio: 3 / 4;       /* portrait — most certificates are this shape */
   display: flex; align-items: center; justify-content: center;
 }
 .cert-showcase-img img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  transition: transform 0.4s ease;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto; height: auto;
+  object-fit: contain;        /* full cert visible, never cropped */
+  display: block;
+  transition: transform 0.3s ease;
 }
 .cert-showcase:hover .cert-showcase-img img {
-  transform: scale(1.04);
+  transform: scale(1.03);
 }
 .cert-zoom-hint {
   position: absolute; bottom: 0; left: 0; right: 0;
@@ -2518,93 +2526,93 @@ body::before {
 }
 
 /* ============================================
-   Sold-out treatment
-   Inspired by traditional Chinese seal (印章) — restrained
-   round chop in image area, dimmed image, hidden CTAs.
+   Sold-out — small corner chop + restrained body label.
+   Image stays clear, food still looks tasty, the seal is a
+   "stamped on top" accent in the corner like a real shop notice.
    ============================================ */
 .weekly-card.is-soldout {
   position: relative;
-  /* very subtle desaturation, not the whole image grey */
-}
-.weekly-card.is-soldout .wc-image::after {
-  /* gentle warm overlay so image stays readable but mood drops */
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 247, 237, 0.18) 0%,
-    rgba(58, 31, 15, 0.18) 100%);
-  pointer-events: none;
 }
 .weekly-card.is-soldout .wc-image img {
-  filter: saturate(0.7) brightness(0.92);
+  filter: saturate(0.78) brightness(0.95);
   transition: filter 0.3s;
 }
-.weekly-card.is-soldout .qty-stepper,
+.weekly-card.is-soldout .qty-stepper { display: none; }
 .weekly-card.is-soldout .btn-add { display: none; }
-.weekly-card.is-soldout .wc-buy { min-height: 36px; } /* keep card height */
-
-/* hide the small top-right "余" badge — the chop is the main signal */
+/* Hide the original 余N badge — the chop is the signal */
 .weekly-card.is-soldout .wc-stock { display: none; }
 
-/* The chop — a real-feeling 印章 in image center */
+/* Small corner chop */
 .wc-soldout-stamp {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%) rotate(-7deg);
-  width: 118px; height: 118px;
+  top: 12px; right: 12px;
+  width: 64px; height: 64px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 30%,
-      rgba(255, 220, 210, 0.18) 0%,
-      transparent 55%),
+    radial-gradient(circle at 32% 32%,
+      rgba(255, 220, 210, 0.22) 0%, transparent 55%),
     var(--stamp);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* double inner ring like real chops */
+  /* Double inner ring like real Chinese seals */
   box-shadow:
-    inset 0 0 0 3px rgba(255, 247, 237, 0.92),
-    inset 0 0 0 5px var(--stamp),
-    0 6px 20px rgba(122, 29, 24, 0.32),
-    0 1px 2px rgba(58, 31, 15, 0.25);
+    inset 0 0 0 2px rgba(255, 247, 237, 0.92),
+    inset 0 0 0 3.5px var(--stamp),
+    0 4px 12px rgba(122, 29, 24, 0.4),
+    0 1px 3px rgba(58, 31, 15, 0.3);
+  transform: rotate(-8deg);
   pointer-events: none;
   z-index: 5;
-  /* subtle "ink unevenness" via SVG noise for handcrafted feel */
-  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='118' height='118'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='2' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0.85'/></filter><rect width='118' height='118' filter='url(%23n)'/><circle cx='59' cy='59' r='59' fill='black'/></svg>");
-          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='118' height='118'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='2' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0.85'/></filter><rect width='118' height='118' filter='url(%23n)'/><circle cx='59' cy='59' r='59' fill='black'/></svg>");
 }
 .wc-soldout-stamp .zh {
   color: #fff7ed;
   font-family: "Ma Shan Zheng", "Noto Serif SC", serif;
-  font-size: 30px;
+  font-size: 18px;
   line-height: 1;
-  letter-spacing: 0.10em;
-  text-shadow: 0 1px 1px rgba(58, 31, 15, 0.25);
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 1px rgba(58, 31, 15, 0.3);
 }
 .wc-soldout-stamp .en {
-  color: rgba(255, 247, 237, 0.88);
+  color: rgba(255, 247, 237, 0.85);
   font-family: "Noto Sans SC", sans-serif;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  margin-top: 6px;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin-top: 3px;
   text-transform: uppercase;
 }
-.wc-soldout-stamp::before {
-  /* tiny dot ornament between zh and en, like classical chops */
-  content: "·";
-  position: absolute;
-  bottom: 22px; left: 50%; transform: translateX(-50%);
-  color: rgba(255, 247, 237, 0.55);
-  font-size: 12px;
+
+/* Replacement label inside body where the add button used to be */
+.weekly-card.is-soldout .wc-buy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+}
+.wc-soldout-msg {
+  font-family: "Noto Serif SC", serif;
+  font-size: 14px;
+  color: var(--stamp);
+  letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 8px;
+}
+.wc-soldout-msg::before,
+.wc-soldout-msg::after {
+  content: "";
+  display: inline-block;
+  width: 28px; height: 1px;
+  background: rgba(192, 56, 42, 0.35);
 }
 
 @media (max-width: 480px) {
-  .wc-soldout-stamp { width: 96px; height: 96px; }
-  .wc-soldout-stamp .zh { font-size: 24px; }
-  .wc-soldout-stamp .en { font-size: 8px; letter-spacing: 0.18em; }
+  .wc-soldout-stamp {
+    width: 54px; height: 54px;
+    top: 10px; right: 10px;
+  }
+  .wc-soldout-stamp .zh { font-size: 15px; }
+  .wc-soldout-stamp .en { font-size: 6px; }
 }
 
 /* Preview (next-week) cards: dimmed, no stepper */

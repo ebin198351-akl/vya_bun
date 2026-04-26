@@ -2801,18 +2801,22 @@
                   <p class="wc-desc">${isZh() ? (it.desc_zh || it.desc_en || "") : (it.desc_en || it.desc_zh || "")}</p>
                   <div class="wc-price">NZ$ ${(it.price_cents/100).toFixed(2)}<small> ${t("/ 只", "/ pc")}</small></div>
                   <div class="wc-buy">
-                    <div class="qty-stepper">
-                      <button type="button" data-dec="${it.id}" aria-label="-">−</button>
-                      <input type="number" min="0" max="${it.remaining}"
-                             value="${inCart}" data-qty="${it.id}">
-                      <button type="button" data-inc="${it.id}" aria-label="+">+</button>
-                    </div>
-                    <button type="button" class="btn-add ${inCart ? 'in-cart' : ''}"
-                            data-add="${it.id}" ${it.remaining === 0 ? 'disabled' : ''}>
-                      ${inCart > 0
-                        ? t(`已加 ${inCart}`, `In cart (${inCart})`)
-                        : t("加入购物车", "Add to cart")}
-                    </button>
+                    ${isOut ? `
+                      <div class="wc-soldout-msg">${t('今日订满,明日再约', "Today's batch is full")}</div>
+                    ` : `
+                      <div class="qty-stepper">
+                        <button type="button" data-dec="${it.id}" aria-label="-">−</button>
+                        <input type="number" min="0" max="${it.remaining}"
+                               value="${inCart}" data-qty="${it.id}">
+                        <button type="button" data-inc="${it.id}" aria-label="+">+</button>
+                      </div>
+                      <button type="button" class="btn-add ${inCart ? 'in-cart' : ''}"
+                              data-add="${it.id}">
+                        ${inCart > 0
+                          ? t(`已加 ${inCart}`, `In cart (${inCart})`)
+                          : t("加入购物车", "Add to cart")}
+                      </button>
+                    `}
                   </div>
                 </div>
               </article>`;
