@@ -2040,12 +2040,30 @@ body::before {
    Lives at the bottom in the compliance section,
    2-column layout: cert card | text + allergens
    ============================================ */
+/* Outer "framed" wrapper holding cert + allergen text together,
+   centered on the page like a single document. */
+.compliance-card {
+  max-width: 880px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid rgba(192, 56, 42, 0.18);
+  border-top: 4px solid var(--stamp);
+  border-radius: 14px;
+  padding: 28px 32px;
+  box-shadow:
+    0 16px 36px rgba(58, 31, 15, 0.10),
+    0 2px 6px rgba(58, 31, 15, 0.05);
+}
+
 .compliance-layout {
   display: grid;
-  grid-template-columns: minmax(240px, 280px) 1fr;
-  gap: 36px;
+  grid-template-columns: minmax(220px, 260px) 1fr;
+  gap: 32px;
   align-items: start;       /* top-align — both flow naturally */
   text-align: left;
+}
+@media (max-width: 600px) {
+  .compliance-card { padding: 20px 18px; border-radius: 12px; }
 }
 @media (max-width: 760px) {
   .compliance-layout {
@@ -2054,25 +2072,16 @@ body::before {
   }
 }
 
-/* Certificate showcase card (left column) — natural compact size */
+/* Certificate showcase (now lives inside the framed compliance-card,
+   so no own border/shadow — keeps it visually integrated). */
 .cert-showcase {
-  background: #fff;
-  border-radius: 14px;
-  padding: 14px 16px 12px;
-  box-shadow:
-    0 12px 28px rgba(58, 31, 15, 0.10),
-    0 2px 6px rgba(58, 31, 15, 0.06);
-  border-top: 4px solid var(--stamp);
+  background: transparent;
+  padding: 0;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: opacity 0.2s;
   position: relative;
 }
-.cert-showcase:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 18px 36px rgba(58, 31, 15, 0.16),
-    0 4px 8px rgba(58, 31, 15, 0.08);
-}
+.cert-showcase:hover { opacity: 0.92; }
 .cert-showcase:focus-visible {
   outline: 3px solid var(--stamp);
   outline-offset: 4px;
